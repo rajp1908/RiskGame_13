@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.image.*?>
+<?import java.lang.*?>
+<?import javafx.scene.layout.*?>
+
+
+<Pane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1">
+   <children>
+      <ImageView fitHeight="176.0" fitWidth="354.0" layoutX="118.0" layoutY="20.0" pickOnBounds="true">
+         <image>
+            <Image url="@mainscreen.jpg" />
+         </image>
+      </ImageView>
+      <Button fx:id="btnLoadGame" layoutX="177.0" layoutY="247.0" mnemonicParsing="false" onAction="#loadGame" prefHeight="25.0" prefWidth="236.0" text="Load Game" />
+      <Button fx:id="btnMapEditor" layoutX="178.0" layoutY="293.0" mnemonicParsing="false" onAction="#editMap" prefHeight="25.0" prefWidth="236.0" text="Map Editor" />
+      <Button fx:id="btnExit" layoutX="178.0" layoutY="340.0" mnemonicParsing="false" onAction="#exit" prefHeight="25.0" prefWidth="236.0" text="Exit" />
+      <Button fx:id="btnPlayGame" layoutX="177.0" layoutY="200.0" mnemonicParsing="false" onAction="#playGame" prefHeight="25.0" prefWidth="236.0" text="Play Game" />
+   </children>
+</Pane>
