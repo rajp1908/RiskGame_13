@@ -1,4 +1,4 @@
-package com.risk6441.config;
+package com.risk6441.configuration;
 
 /**
  * The set of named values of cards

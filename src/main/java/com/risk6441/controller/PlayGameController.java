@@ -1,6 +1,3 @@
-/**
- * Sample Skeleton for 'gameplay.fxml' Controller Class
- */
 package com.risk6441.controller;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
