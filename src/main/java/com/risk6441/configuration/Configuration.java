@@ -5,6 +5,7 @@ package com.risk6441.config;
  * number of armies according to the number of players.
  * @author Deep
  */
+
 public class Configuration {
 
 	/**
