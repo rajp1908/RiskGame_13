@@ -1,5 +1,6 @@
 package com.risk6441.controller;
 
+import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 
@@ -32,7 +33,7 @@ public class MapRedactorSplashController {
      * @param event Creates button for create map.
      */
     @FXML
-    void btnCreateMap(ActionEvent event) {
+    void createMap(ActionEvent event) {
 
     }
     
@@ -44,7 +45,7 @@ public class MapRedactorSplashController {
      */
 
     @FXML
-    void btnEditMap(ActionEvent event) {
+    void editMap(ActionEvent event) {
 
     }
     
@@ -54,7 +55,7 @@ public class MapRedactorSplashController {
      */
 
     @FXML
-    void btnExit(ActionEvent event) {
+    void exit(ActionEvent event) {
 
     }
 
