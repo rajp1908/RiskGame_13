@@ -49,7 +49,7 @@ public class MainController {
     @FXML
     void editMap(ActionEvent event) throws IOException {
     	Stage primaryStage = (Stage) btnExit.getScene().getWindow();    	
-    	Pane mainPane = (Pane) FXMLLoader.load(Main.class.getResource("/mapeditor.fxml"));
+    	Pane mainPane = (Pane) FXMLLoader.load(Main.class.getResource("/mapeditorsplash.fxml"));
     	Stage stage = new Stage();
     	stage.setScene(new Scene(mainPane));
     	stage.setX(primaryStage.getX() + 200);
