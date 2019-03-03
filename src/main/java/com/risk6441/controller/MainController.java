@@ -2,11 +2,11 @@ package com.risk6441.controller;
 import java.io.File;
 import java.io.IOException;
 
-import com.risk6441.configuration.Config;
+import com.risk6441.configuration.Configuration;
 import com.risk6441.entity.Map;
 import com.risk6441.exception.InvalidMap;
 import com.risk6441.main.Main;
-import com.risk6441.maputilities.CommonMapUtil;
+import com.risk6441.maputilities.CommonMapUtilities;
 import com.risk6441.maputilities.MapReader;
 
 import javafx.application.Platform;
@@ -47,7 +47,7 @@ public class MainController {
      * @throws IOException Produces an IOException.
      */
     @FXML
-    void editMap(ActionEvent event) {
+    void editMap(ActionEvent event) throws IOException {
     	Stage primaryStage = (Stage) btnExit.getScene().getWindow();    	
     	Pane mainPane = (Pane) FXMLLoader.load(Main.class.getResource("/mapeditor.fxml"));
     	Stage stage = new Stage();

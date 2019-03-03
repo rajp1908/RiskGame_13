@@ -1,4 +1,4 @@
-package com.risk6441.config;
+package com.risk6441.configuration;
 
 /**
  * This class defines static properties for the game such as 

@@ -33,11 +33,11 @@ public class PlayGameController {
     @FXML // fx:id="btnEndTurn"
     private Button btnEndTurn; // Value injected by FXMLLoader
 
-    @FXML // fx:id="terrList"
-    private ListView<?> terrList; // Value injected by FXMLLoader
+    @FXML // fx:id="counList"
+    private ListView<?> counList; // Value injected by FXMLLoader
 
     @FXML // fx:id="adjTerrList"
-    private ListView<?> adjTerrList; // Value injected by FXMLLoader
+    private ListView<?> adjCounList; // Value injected by FXMLLoader
 
     @FXML // fx:id="btnCards"
     private Button btnCards; // Value injected by FXMLLoader

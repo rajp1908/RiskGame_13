@@ -1,5 +1,6 @@
 package com.risk6441.controller;
 
+import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
@@ -92,16 +93,16 @@ public class MapRedactorController {
     private ListView<?> contList;
 
     @FXML
-    private ListView<?> terrList;
+    private ListView<?> countList;
 
     @FXML
-    private ListView<?> adjTerrList;
+    private ListView<?> adjCounList;
 
     @FXML
     private Label lblContList;
 
     @FXML
-    private Label lblTerrList;
+    private Label lblCounList;
 
     @FXML
     private Button btnDltAdjTerr;
@@ -149,20 +150,20 @@ public class MapRedactorController {
     }
 	
 	/**
-	* This method adds a territory to the continent.
-	* @param event When the user clicks the add territory button, this event is triggered and passed to the method.
+	* This method adds a country to the continent.
+	* @param event When the user clicks the add country button, this event is triggered and passed to the method.
 	*/
     @FXML
-    void addTerritiory(ActionEvent event) {
+    void addCountry(ActionEvent event) {
 
     }
 
 	/**
-	* This method deletes adjacent territories
+	* This method deletes adjacent countries
 	* @param event When the user clicks the delete adjacent button, this event is triggered and passed to the method.
 	*/
 	@FXML
-    void deleteAdjTerritory(ActionEvent event) {
+    void deleteAdjCountry(ActionEvent event) {
 
     }
 	
@@ -176,11 +177,11 @@ public class MapRedactorController {
     }
 	
 	/**
-	* This method deletes territory from the continent.
-	* @param event When the user clicks the delete territory button, this event is triggered and passed to the method.
+	* This method deletes country from the continent.
+	* @param event When the user clicks the delete country button, this event is triggered and passed to the method.
 	*/
     @FXML
-    void deleteTerritiory(ActionEvent event) {
+    void deleteCountry(ActionEvent event) {
 
     }
 	
@@ -213,9 +214,9 @@ public class MapRedactorController {
     }
 	
 	/**
-	* This method updates territories.
-	* @param event When the user clicks the update territory button, this event is triggered and passed to the method.
-	* @throws InvalidMapException InvalidMapException if any error occurs
+	* This method updates countries.
+	* @param event When the user clicks the update country button, this event is triggered and passed to the method.
+	* @throws InvalidMap InvalidMapException if any error occurs
 	*/
     @FXML
     void updateTerritiory(ActionEvent event) {

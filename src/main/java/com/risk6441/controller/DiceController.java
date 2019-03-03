@@ -98,7 +98,7 @@ public class DiceController {
     
     /**
 	 * This method handles the case when user does not move any armies to its
-	 * defeated adjacent territory
+	 * defeated adjacent country
 	 * 
 	 * @param event event object for the javafx
 	 */
@@ -145,7 +145,7 @@ public class DiceController {
     
     /**
 	 * This method handles the case when user moves the armies to its defeated
-	 * adjacent territory
+	 * adjacent country
 	 * 
 	 * @param event event object for the javafx
 	 */
@@ -169,7 +169,7 @@ public class DiceController {
     
     /**
 	 * This method handles the case when user moves all the armies to its defeated
-	 * adjacent territory
+	 * adjacent country
 	 * 
 	 * @param event event object for the javafx
 	 */
