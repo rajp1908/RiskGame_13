@@ -85,7 +85,6 @@ public class MapWriter {
 		continentData.append("\n");
 		continentData.append("[Continents]");
 		continentData.append("\n");
-		}
 		return continentData;
 	}
 	
