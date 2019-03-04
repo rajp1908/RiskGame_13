@@ -1,8 +1,20 @@
 package com.risk6441.controller;
 
+import java.io.File;
+import java.io.IOException;
+
+import com.risk6441.entity.Map;
+import com.risk6441.exception.InvalidMap;
+import com.risk6441.maputilities.CommonMapUtilities;
+import com.risk6441.maputilities.MapReader;
+
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
 import javafx.scene.control.Button;
+import javafx.stage.Stage;
 
 /**
  * This class controls behavior of MapEditor Splash Screen.
@@ -13,6 +25,7 @@ import javafx.scene.control.Button;
  * </ul>
  * @author Raj
  * @author Hardik 
+ * @author Jemish
  *
  */
 
@@ -34,7 +47,25 @@ public class MapRedactorSplashController {
      */
     @FXML
     void createMap(ActionEvent event) {
+    	//open scene for the map editor
+    	Stage primaryStage = (Stage) btnExit.getScene().getWindow();
+    	MapRedactorController controller = new MapRedactorController();
+    	FXMLLoader loader = new FXMLLoader(getClass().getClassLoader().getResource("mapeditor.fxml"));
+   
+		loader.setController(controller);
 
+		Parent root = null;
+		try {
+			root = (Parent) loader.load();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		Stage stage = new Stage();
+		Scene scene = new Scene(root);
+		stage.setScene(scene);
+    	stage.setX(primaryStage.getX() - 200);
+    	stage.setY(primaryStage.getY() - 200);
+		stage.show();
     }
     
     /**
@@ -46,7 +77,39 @@ public class MapRedactorSplashController {
 
     @FXML
     void editMap(ActionEvent event) {
+    	File file = CommonMapUtilities.openMapFile();
+    	
+    	//get map object by reading file
+    	MapReader mapReader = new MapReader();
+    	Map map = null;
+    	try {
+    		map = mapReader.readMapFile(file);
+    		System.out.println(map);
+    	}catch (InvalidMap e) {
+    		e.printStackTrace();
+    		CommonMapUtilities.alertBox("Error", e.getMessage(), "Map is not valid.");
+    		return;
+    	}
+    	
+    	//open scene for the map editor
+    	Stage primaryStage = (Stage) btnExit.getScene().getWindow();
+    	MapRedactorController controller = new MapRedactorController(map,file);
+    	FXMLLoader loader = new FXMLLoader(getClass().getClassLoader().getResource("mapeditor.fxml"));
+		loader.setController(controller);
 
+		Parent root = null;
+		try {
+			root = (Parent) loader.load();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		Stage stage = new Stage();
+		Scene scene = new Scene(root);
+		stage.setScene(scene);
+    	stage.setX(primaryStage.getX() + 200);
+    	stage.setY(primaryStage.getY() + 200);
+		stage.show();
     }
     
      /**
@@ -56,7 +119,8 @@ public class MapRedactorSplashController {
 
     @FXML
     void exit(ActionEvent event) {
-
+    	Stage stage = (Stage) btnExit.getScene().getWindow();
+    	stage.close();
     }
 
 }
