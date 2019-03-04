@@ -16,7 +16,7 @@
       <Button id="btn3" fx:id="btnExit" layoutX="8.0" layoutY="298.0" mnemonicParsing="false" onAction="#exit" prefHeight="27.0" prefWidth="297.0" text="Exit" />
       <ImageView id="image" fitHeight="170.0" fitWidth="272.0" layoutX="30.0" layoutY="14.0" pickOnBounds="true" preserveRatio="true">
          <image>
-            <Image url="@risk.jpg" />
+            <Image url="@mainscreen.jpg" />
          </image>
       </ImageView>
    </children>
