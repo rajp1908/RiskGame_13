@@ -1,6 +1,3 @@
-/**
- * 
- */
 package com.risk6441.maputilities;
 
 import java.io.File;
@@ -35,7 +32,7 @@ public class CommonMapUtilities {
 
 	/**
 	 * This method is used to enable controls
-	 * @param control It is the object of javafx.scene.control.Control {@link javafx.scene.control.Control}
+	 * @param controls It is the object of javafx.scene.control.Control {@link javafx.scene.control.Control}
 	 */
 	public static void enableControls(Control... controls) {
 		for(Control c : controls)
@@ -44,7 +41,7 @@ public class CommonMapUtilities {
 	
 	/**
 	 * This method is used to disable controls
-	 * @param control It is the object of javafx.scene.control.Control {@link javafx.scene.control.Control}
+	 * @param controls It is the object of javafx.scene.control.Control {@link javafx.scene.control.Control}
 	 */
 	public static void disableControls(Control... controls) {
 		for(Control c : controls)
@@ -143,7 +140,7 @@ public class CommonMapUtilities {
 	
 	/**
 	 * This method is used to show controls
-	 * @param control It is the object of javafx.scene.control.Control {@link javafx.scene.control.Control}
+	 * @param controls It is the object of javafx.scene.control.Control {@link javafx.scene.control.Control}
 	 */
 	public static void showControls(Control... controls) {
 		for(Control c : controls)
@@ -152,7 +149,7 @@ public class CommonMapUtilities {
 	
 	/**
 	 * This method is used to hide controls
-	 * @param controls @param control It is the object of javafx.scene.control.Control {@link javafx.scene.control.Control}
+	 * @param controls It is the object of javafx.scene.control.Control {@link javafx.scene.control.Control}
 	 */
 	public static void hideControl(Control...controls) {
 		for(Control control:controls)

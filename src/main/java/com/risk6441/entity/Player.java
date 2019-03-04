@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.risk6441.configuration.PlayerStrategy;
+import com.risk6441.strategy.IStrategy;
 
 
 /**
@@ -14,6 +15,10 @@ import com.risk6441.configuration.PlayerStrategy;
 public class Player implements Serializable{
 	
 	
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	private int id;
 	private String name;
 	private int armies;

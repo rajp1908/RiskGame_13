@@ -1,19 +1,12 @@
 package com.risk6441.controller;
-import java.io.File;
 import java.io.IOException;
 
-import com.risk6441.configuration.Configuration;
-import com.risk6441.entity.Map;
-import com.risk6441.exception.InvalidMap;
 import com.risk6441.main.Main;
-import com.risk6441.maputilities.CommonMapUtilities;
-import com.risk6441.maputilities.MapReader;
 
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
-import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.layout.Pane;

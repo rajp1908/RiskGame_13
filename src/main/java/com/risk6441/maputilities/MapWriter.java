@@ -85,6 +85,11 @@ public class MapWriter {
 		continentData.append("\n");
 		continentData.append("[Continents]");
 		continentData.append("\n");
+		
+		for(Continent continent : map.getContinents()) {
+			continentData.append(continent.getName() + "=" + continent.getValue());
+			continentData.append("\n");
+		}
 		return continentData;
 	}
 	
