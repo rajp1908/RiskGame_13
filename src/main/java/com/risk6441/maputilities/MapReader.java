@@ -42,6 +42,19 @@ public class MapReader {
 		return map;
 	}
 	
+	/**
+	 * This method reads the map file and verifies if the map is valid.
+	 * @param file The map file to be read.
+	 * @return map The map object returned after reading the file.
+	 * @throws InvalidMapException Throws IOException if the map is invalid.
+	 */
+	public Map readMapFile(final File file) throws InvalidMap{
+		
+		this.map = processMapFile(file);
+		MapVerifier.verifyMap(map);
+		return map;
+	}
+	
 	
 	/**
 	 * This method is used to read and process map data
