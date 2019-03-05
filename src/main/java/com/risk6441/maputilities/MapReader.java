@@ -9,7 +9,7 @@ import java.util.List;
 import java.util.Scanner;
 import java.util.StringTokenizer;
 
-import org.apache.commons.text.WordUtils;
+import org.apache.commons.lang3.text.WordUtils;
 
 import com.risk6441.entity.Continent;
 import com.risk6441.entity.Map;

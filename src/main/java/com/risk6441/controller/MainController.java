@@ -1,12 +1,19 @@
 package com.risk6441.controller;
+import java.io.File;
 import java.io.IOException;
 
+import com.risk6441.configuration.Configuration;
+import com.risk6441.entity.Map;
+import com.risk6441.exception.InvalidMap;
 import com.risk6441.main.Main;
+import com.risk6441.maputilities.CommonMapUtilities;
+import com.risk6441.maputilities.MapReader;
 
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
+import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.layout.Pane;
@@ -21,6 +28,7 @@ import javafx.stage.Stage;
  * </ul>
  * @author Hardik
  * @author Raj
+ * @author Jemish
  *
  */
 public class MainController {
@@ -69,8 +77,40 @@ public class MainController {
      * @throws IOException Throws IOException.
      */
     @FXML
-    void playGame(ActionEvent event) {
-    			
+    void playGame(ActionEvent event) throws InvalidMap, IOException {
+    	
+    	File file= CommonMapUtilities.openMapFile();
+    	//get map object by reading file
+    	Configuration.isPopUpShownInAutoMode = true;
+    	
+    	MapReader mapReader = new MapReader();
+    	Map map = null;
+    	try {
+    		map = mapReader.readMapFile(file);
+    		System.out.println(map);
+    	}catch (InvalidMap e) {
+    		e.printStackTrace();
+    		CommonMapUtilities.alertBox("Error", e.getMessage(), "Map is not valid.");
+    		return;
+    	}
+    	Stage primaryStage = (Stage) btnExit.getScene().getWindow();
+    	
+    	PlayGameController controller = new PlayGameController(map);
+    	
+    	FXMLLoader loader = new FXMLLoader(getClass().getClassLoader().getResource("gameplay.fxml"));
+		loader.setController(controller);
+		
+		Parent root = null;
+		try {
+			root = (Parent) loader.load();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		Stage stage = new Stage();
+		Scene scene = new Scene(root);
+		stage.setScene(scene);
+    	stage.setX(primaryStage.getX() + 200);
+    	stage.setY(primaryStage.getY() + 200);
+		stage.show();
     }
-
 }

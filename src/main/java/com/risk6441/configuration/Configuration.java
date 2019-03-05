@@ -9,9 +9,9 @@ package com.risk6441.configuration;
 public class Configuration {
 
 	/**
-	 * The ARMIES_TWO_PLAYER Constant assigns 40 armies to 2 player in the game 
+	 * The ARMIES_TWO_PLAYER Constant assigns 35 armies to 2 player in the game 
 	 */
-	public static final Integer ARMIES_TWO_PLAYER = 40;
+	public static final Integer ARMIES_TWO_PLAYER = 35;
 
 	/**
 	 *The message to be printed in text after attack phase is completed 
@@ -21,7 +21,7 @@ public class Configuration {
 	/**
 	 * The ARMIES_TWO_PLAYER Constant assigns 35 armies to 3 player in the game 
 	 */
-	public static final Integer ARMIES_THREE_PLAYER = 35;
+	public static final Integer ARMIES_THREE_PLAYER = 5;
 	
 	/**
 	 * The ARMIES_TWO_PLAYER Constant assigns 30 armies to 4 player in the game 
