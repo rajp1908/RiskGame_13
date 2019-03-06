@@ -39,8 +39,12 @@ public class GameUtilities {
 	 * @param string String that is to be written in textArea.
 	 */
 	public static void addLogFromText(String string) {
+//		try {
+			
 		if(!isTestMode)
-		Platform.runLater(() -> txtMsgArea.appendText(string));	
+			Platform.runLater(() -> txtMsgArea.appendText(string));	
+//		}
+//		catch(Exception e) {}
 	}
 	
 	/**

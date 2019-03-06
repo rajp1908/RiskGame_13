@@ -202,8 +202,8 @@ public class CommonMapUtilities {
 	/**
 	 * @param bool true for enabling the button; false for disabling button
 	 */
-	public static void enableOrDisableSave(boolean bool) {
-		if(!Configuration.isAllComputerPlayer)
-			btnSave.setDisable(!bool);
-	}
+//	public static void enableOrDisableSave(boolean bool) {
+//		if(!Configuration.isAllComputerPlayer)
+//			btnSave.setDisable(!bool);
+//	}
 }
