@@ -50,10 +50,9 @@ public class Human implements IStrategy {
 				} else {
 					Country.setArmy(Country.getArmy() + getArmy);
 					currentPlayer.setArmies(currentPlayer.getArmies() - getArmy);
-					CommonMapUtilities.enableOrDisableSave(false);
-					GameUtilities.addLogFromText("===" + getArmy + " assigned to : === \n" + Country + "  -- Player "
-							+ currentPlayer.getName() + "\n");
-					GameUtilities.addLogFromText("======Reinforce Phase Completed. ===========\n");
+					//CommonMapUtilities.enableOrDisableSave(false);
+					GameUtilities.addLogFromText("******************  " + getArmy + " assigned to : **************************************** \n" + Country + "  -- Player: "
+							+ currentPlayer.getName() + "\n\n");
 				}
 			} else {
 				CommonMapUtilities.alertBox("Info", "Invalid Input. Number should be > 0.", "Alert");
@@ -73,10 +72,13 @@ public class Human implements IStrategy {
 	@Override
 	public boolean fortificationPhase(ListView<Country> counList, ListView<Country> adjcounList,
 			Player currentPlayer, Map map,ArrayList<Country> counArList,ArrayList<Country> adjcounArList) {
+		
+		System.out.println("In fortification phase");
 		Country Country = counList.getSelectionModel().getSelectedItem();
 		Country adjCountry = adjcounList.getSelectionModel().getSelectedItem();
-
+		System.out.println(Country == null);
 		if (Country == null) {
+			System.out.println("Inside null condition");
 			CommonMapUtilities.alertBox("Info", "Please select a Country", "Alert");
 			return false;
 		} else if (adjCountry == null) {
@@ -100,8 +102,8 @@ public class Human implements IStrategy {
 				Country.setArmy(Country.getArmy() - armyCount);
 				adjCountry.setArmy(adjCountry.getArmy() + armyCount);
 				GameUtilities.addLogFromText(
-						armyCount + " armies fortified on Country: " + adjCountry.getName() + " From "+Country.getName()+"\n");
-				GameUtilities.addLogFromText("======Fortification Done ===========\n");
+						armyCount + " armies fortified on Country: " + adjCountry.getName() + " From "+Country.getName()+"\n\n");
+				GameUtilities.addLogFromText("**************    Fortification Phase Ends    ********************************\n\n");
 				return true;
 			}
 		} else {
