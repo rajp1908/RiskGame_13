@@ -6,17 +6,17 @@ scroll=scroll
 wrap=wrap
 
 [Continents]
-gujarat=4
-maharasta=4
-rajasthan=4
+Gujarat=4
+Maharasta=4
+Rajasthan=4
 
 [Countries]
-rajkot,10,30,gujarat,mehsana,jaipur
-mehsana,20,30,gujarat,rajkot,mumbai
+Rajkot,10,30,Gujarat,Mehsana,Jaipur
+Mehsana,20,30,Gujarat,Rajkot,Mumbai
 
-mumbai,30,40,maharasta,mehsana,pune
-pune,30,50,maharasta,mumbai
+Mumbai,30,40,Maharasta,Mehsana,Pune
+Pune,30,50,Maharasta,Mumbai
 
-jaipur,20,40,rajasthan,rajkot,bikaner
-bikaner,40,30,rajasthan,jaipur
+Jaipur,20,40,Rajasthan,Rajkot,Bikaner
+Bikaner,40,30,Rajasthan,Jaipur
 
