@@ -23,7 +23,6 @@ public class Player implements Serializable{
 	private String name;
 	private int armies;
 	private List<Country> assignedCountry;
-	private List<Card> cardList;
 	private int numeberOfCardsExchanged;
 	
 	/**
@@ -66,22 +65,9 @@ public class Player implements Serializable{
 		this.playerStrategy = playerStrategy;
 	}
 
-	/**
-	 * Getter method for the cards of player.
-	 * @return the cardList
-	 */
-	public List<Card> getCardList() {
-		return cardList;
-	}
-
-	/**
-	 * Setter method for the cards of the player
-	 * @param cardList set cardList
-	 */
-	public void setCardList(List<Card> cardList) {
-		this.cardList = cardList;
-	}
-
+	
+	
+	
 	/**
 	 * Player parameterized constructor.
 	 * @param id player id
@@ -92,7 +78,6 @@ public class Player implements Serializable{
 		this.id = id;
 		this.name = name;
 		this.assignedCountry = new ArrayList<Country>();
-		this.cardList = new ArrayList<>();
 		this.numeberOfCardsExchanged = 0;
 	}
 
