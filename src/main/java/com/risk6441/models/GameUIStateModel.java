@@ -16,6 +16,8 @@ public class GameUIStateModel implements Serializable{
 	
 	public boolean isReinforcemetnEnable = false;
 	
+	public boolean isCardsEnable = false;
+	
 	public boolean isFortificationEnable = false;
 	
 	public boolean isNoMoreAttackEnable = false;
