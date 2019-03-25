@@ -23,6 +23,7 @@ public class Player implements Serializable{
 	private String name;
 	private int armies;
 	private List<Country> assignedCountry;
+	private List<Card> cardList;
 	private int numeberOfCardsExchanged;
 	
 	/**
@@ -65,6 +66,28 @@ public class Player implements Serializable{
 		this.playerStrategy = playerStrategy;
 	}
 
+	
+	
+	
+	/**
+	 * get cards of player
+	 * @return the cardList
+	 */
+	public List<Card> getCardList() {
+		return cardList;
+	}
+
+	/**
+	 * set cards of the player
+	 * @param cardList the cardList to set
+	 */
+	public void setCardList(List<Card> cardList) {
+		this.cardList = cardList;
+	}
+	
+	
+	
+	
 	
 	
 	
