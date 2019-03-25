@@ -101,6 +101,7 @@ public class Player implements Serializable{
 		this.id = id;
 		this.name = name;
 		this.assignedCountry = new ArrayList<Country>();
+		this.cardList = new ArrayList<>();
 		this.numeberOfCardsExchanged = 0;
 	}
 
