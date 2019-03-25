@@ -1,15 +1,25 @@
 package com.risk6441.strategy;
 
+import java.io.IOException;
 import java.util.ArrayList;
+import java.util.List;
+
 import com.risk6441.entity.Map;
 import com.risk6441.entity.Player;
 import com.risk6441.entity.Country;
+import com.risk6441.exception.InvalidGameAction;
+import com.risk6441.controller.DiceController;
 import com.risk6441.gameutilities.GameUtilities;
 import com.risk6441.maputilities.CommonMapUtilities;
-
+import com.risk6441.models.DiceModel;
+import com.risk6441.models.PlayerModel;
 
 import javafx.collections.ObservableList;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
 import javafx.scene.control.ListView;
+import javafx.stage.Stage;
 
 /**
  * @author Hardik
@@ -109,6 +119,47 @@ public class Human implements IStrategy {
 		} else {
 			CommonMapUtilities.alertBox("Info", "Invalid Input. Number should be > 0.", "Alert");
 			return false;
+		}
+	}
+	
+	
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * com.risk6441.strategy.IStrategy#attackPhase(javafx.scene.control.ListView,
+	 * javafx.scene.control.ListView, com.risk6441.models.PlayerModel,
+	 * javafx.scene.control.TextArea)
+	 */
+	public void attackPhase(ListView<Country> countryList, ListView<Country> adjCountryList, PlayerModel playerModel,
+			List<Player> playerList,ArrayList<Country> countryArList,ArrayList<Country> adjCountryArList) throws InvalidGameAction {
+		Country attackingCountry = countryList.getSelectionModel().getSelectedItem();
+		Country defendingCountry = adjCountryList.getSelectionModel().getSelectedItem();
+		if (attackingCountry != null && defendingCountry != null) {
+			playerModel.isValidAttackMove(attackingCountry, defendingCountry);
+
+			DiceModel diceModel = new DiceModel(attackingCountry, defendingCountry);
+			diceModel.addObserver(playerModel);
+			final Stage stage = new Stage();
+			stage.setTitle("Attack Window");
+
+			DiceController diceController = new DiceController(diceModel, this);
+
+			FXMLLoader loader = new FXMLLoader(getClass().getClassLoader().getResource("diceview.fxml"));
+			loader.setController(diceController);
+
+			Parent root = null;
+			try {
+				root = (Parent) loader.load();
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+
+			Scene scene = new Scene(root);
+			stage.setScene(scene);
+			stage.show();
+		} else {
+			throw new InvalidGameAction("Please choose both attacking and defending Country.");
 		}
 	}
 
