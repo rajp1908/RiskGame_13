@@ -9,11 +9,12 @@ import java.util.Observer;
 import java.util.zip.CheckedOutputStream;
 
 import com.risk6441.configuration.Configuration;
+import com.risk6441.entity.Card;
 import com.risk6441.entity.Continent;
 import com.risk6441.entity.Map;
 import com.risk6441.entity.Player;
-import com.risk6441.exception.InvalidGameAction;
 import com.risk6441.entity.Country;
+import com.risk6441.exception.InvalidGameAction;
 import com.risk6441.gameutilities.GameUtilities;
 import com.risk6441.maputilities.CommonMapUtilities;
 import com.risk6441.strategy.Human;
@@ -28,6 +29,7 @@ import javafx.scene.control.TextArea;
  * @author Dolly
  * @author Hardik
  */
+@SuppressWarnings("restriction")
 public class PlayerModel extends Observable implements Observer, Serializable {
 
 	/**
@@ -75,6 +77,11 @@ public class PlayerModel extends Observable implements Observer, Serializable {
 	public void setCurrentPlayer(Player player) {
 		currentPlayer = player;
 	}
+	
+	/**
+	 * the @countryWon
+	 */
+	private int numberOfCountryWon;
 
 	/**
 	 * This method allocates armies to players and display log in TextArea.
@@ -191,11 +198,19 @@ public class PlayerModel extends Observable implements Observer, Serializable {
 
 		return continents;
 	}
+	
+	
+	/**
+	 * This method checks if the player has a valid attack move
+	 * @param countList List of countries.
+	 * @return Returns true if a player has a valid move available else returns false.
+	 */
 
 	public boolean hasValidAttackMove(ArrayList<Country> countList) {
-		boolean validMove = false;
+		boolean validMove = currentPlayer.getStrategy().hasAValidAttackMove((ArrayList<Country>) countList);;
 		if(!validMove) {
 			GameUtilities.addLogFromText("Player - " + currentPlayer.getName() + "\n");
+			GameUtilities.addLogFromText("---> No valid attack move avialble move to Fortification phase.\n");
 			Platform.runLater(() -> {
 				setChanged();
 				notifyObservers("checkForValidFortification");
@@ -205,15 +220,113 @@ public class PlayerModel extends Observable implements Observer, Serializable {
 		return validMove;
 	}
 	
-	public void attackPhase(ListView<Country> countList, ListView<Country> adjCountList, TextArea txtmsg) throws InvalidGameAction{		
-		if(playerList.size() <= 1)
+	
+
+	/**
+	 * This method is to implement attack phase.
+	 * 
+	 * @param countList attacking country.
+	 * @param adjCountList defending country.
+	 * @param txtAreaMsg the area to show results.
+	 * @throws InvalidGameAction Throws invalid game exception.
+	 */
+	
+	public void attackPhase(ListView<Country> countList, ListView<Country> adjCountList, TextArea txtmsg) throws InvalidGameAction{
+		PlayerModel playerModel=  this;
+		ArrayList<Country> conArList = new ArrayList<Country>(countList.getItems());
+		ArrayList<Country> adjConArList = new ArrayList<Country>(adjCountList.getItems());
+		
+		if(playerList.size()<=1)
 			return;
+		
+		
+		if(currentPlayer.getStrategy() instanceof Human) {
+			if(playerList.size()==1) {
+				setChanged();
+				notifyObservers("disableGameControls");
+				return;
+			}
+			currentPlayer.getStrategy().attackPhase(countList, adjCountList, this, playerList, conArList, adjConArList);
 				
-		if((currentPlayer.getStrategy() instanceof Human) && playerList.size() > 1) {
-			setChanged();
-			notifyObservers("Fortification");
+		}else {
+			Thread backgroundThread = new Thread(new Runnable() {
+				@Override
+				public void run() {
+					try {
+						Thread.sleep(Configuration.waitBeweenTurn);
+					} catch (InterruptedException e) {
+						e.printStackTrace();
+					}
+					if (playerList.size() == 1) {
+
+						Platform.runLater(() -> {
+							setChanged();
+							notifyObservers("disableGameControls");
+						});
+						return;
+					}
+					try {
+						currentPlayer.getStrategy().attackPhase(countList, adjCountList, playerModel,playerList, conArList,adjConArList);
+					} catch (InvalidGameAction e) {
+						e.printStackTrace();
+					}
+				}
+			});
+			backgroundThread.setDaemon(true);
+			backgroundThread.start();
 		}
 	}
+	
+	
+	
+	/**
+	 * Check if Attack Move is Valid.
+	 * 
+	 * @param attacking attacking Country
+	 * @param defending defending Country
+	 * @return isValidAttackMove if the attack move is valid
+	 * @throws InvalidGameAction invalid game exception.
+	 */
+	public boolean isValidAttackMove(Country attacking, Country defending) throws InvalidGameAction {
+		boolean isValidAttackMove = false;
+		if (defending.getPlayer() != attacking.getPlayer()) {
+			if (attacking.getArmy() > 1) {
+				isValidAttackMove = true;
+			} else {
+				throw new InvalidGameAction("Attacking country should have more than one army to attack.");
+			}
+		} else {
+			throw new InvalidGameAction("You can\'t attack on your own country.");
+		}
+		return isValidAttackMove;
+	}
+
+	
+	
+	/**
+	 * Check if any Player Lost the Game.
+	 * 
+	 * @param playerList playerPlaying List
+	 * @return playerLost Player Object who lost the game
+	 */
+	public Player checkAnyPlayerLostTheGame(List<Player> playerList) {
+		Player playerLost = null;
+		for (Player player : playerList) {
+			if (player.getAssignedCountry().isEmpty()) {
+				playerLost = player;
+				GameUtilities.addLogFromText(currentPlayer.getName() + " Got " + playerLost.getCardList().size()
+						+ " cards from " + playerLost.getName() + "\n");
+				System.out.println(currentPlayer.getName() + " Got " + playerLost.getCardList().size() + " cards from "
+						+ playerLost.getName() + "\n");
+				currentPlayer.getCardList().addAll(playerLost.getCardList());
+			}
+		}
+		return playerLost;
+	}
+
+	
+	
+	
 	/**
 	 * This method implements the reinforcement phase for the player.
 	 * @param country Selected country for reinforcement phase.
@@ -266,6 +379,8 @@ public class PlayerModel extends Observable implements Observer, Serializable {
 
 		}
 	}
+	
+	
 
 	/**
 	 * fortificationPhase() Method  implements fortification phase.
@@ -339,8 +454,6 @@ public class PlayerModel extends Observable implements Observer, Serializable {
 				country.setArmy(country.getArmy() + 1);
 				currentPlayer.setArmies(playerArmies - 1);
 			}
-		} else {
-			assignArmiesTocountry(txtAreaMsg);
 		}
 		countryList.refresh();
 
@@ -357,6 +470,31 @@ public class PlayerModel extends Observable implements Observer, Serializable {
 
 	}
 	
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see java.util.Observer#update(java.util.Observable, java.lang.Object)
+	 */
+	@Override
+	public void update(Observable o, Object arg) {
+		String str = (String) arg;
+		if (str.equals("rollDiceComplete")) {
+			DiceModel diceModel = (DiceModel) o;
+			System.out.println(getNumOfCountryWon()+"won");
+			setNumOfCountryWon(diceModel.getNumberOfCountryWon()+getNumOfCountryWon());
+			Platform.runLater(() -> {
+				setChanged();
+				notifyObservers("rollDiceComplete");
+			});
+		} else if (str.equals("oneAttackDoneForCheater")) {
+
+			Platform.runLater(() -> {
+				setChanged();
+				notifyObservers("oneAttackDoneForCheater");
+			});
+
+		}
+	}
 	
 	/**
 	 * This method ends the turn of the player.
@@ -368,21 +506,39 @@ public class PlayerModel extends Observable implements Observer, Serializable {
 		});
 		
 	}
+	/**
+	 * This methods returns the number of country won by the player in a turn.
+	 * 
+	 * @return NumOfcountryWon Number of Country won by player in a turn
+	 */
+	public int getNumOfCountryWon() {
+		return numberOfCountryWon;
+	}
 
 	/**
-	 * This method assign armies to player's countries randmomly for COMPUTER strategy 
+	 * This method sets the number of country won by the player.
 	 * 
-	 * @param txtAreaMsg The area where the message is to be displayed.
+	 * @param countryWon the countryWon to set
 	 */
-	private void assignArmiesTocountry(TextArea txtAreaMsg) {
-		if (currentPlayer.getArmies() > 0) {
-			Country con = currentPlayer.getAssignedCountry()
-					.get(CommonMapUtilities.getRandomNumber(currentPlayer.getAssignedCountry().size() - 1));
-			GameUtilities.addLogFromText(currentPlayer.getName() + " - Assigned Armies to " + con.getName() + "\n");
-			con.setArmy(con.getArmy() + 1);
-			currentPlayer.setArmies(currentPlayer.getArmies() - 1);
-		}
+	public void setNumOfCountryWon(int countryWon) {
+		this.numberOfCountryWon = countryWon;
 	}
+
+
+//	/**
+//	 * This method assign armies to player's countries randmomly for COMPUTER strategy 
+//	 * 
+//	 * @param txtAreaMsg The area where the message is to be displayed.
+//	 */
+//	private void assignArmiesTocountry(TextArea txtAreaMsg) {
+//		if (currentPlayer.getArmies() > 0) {
+//			Country con = currentPlayer.getAssignedCountry()
+//					.get(CommonMapUtilities.getRandomNumber(currentPlayer.getAssignedCountry().size() - 1));
+//			GameUtilities.addLogFromText(currentPlayer.getName() + " - Assigned Armies to " + con.getName() + "\n");
+//			con.setArmy(con.getArmy() + 1);
+//			currentPlayer.setArmies(currentPlayer.getArmies() - 1);
+//		}
+//	}
 
 	/**
 	 * This method checks if players armies is exhausted.
@@ -430,9 +586,42 @@ public class PlayerModel extends Observable implements Observer, Serializable {
 		});
 		return false;
 	}
-
-	@Override
-	public void update(Observable o, Object arg) {
-		// TODO Auto-generated method stub
+	
+	/**
+	 * This method is used to exchange cards for army.
+	 * 
+	 * @param selectedCardsByThePlayer List of cards selected by the current player.
+	 * @param txtAreaMsg               The area where the message has to be
+	 *                                 displayed.
+	 */
+	public void tradeCardsAndGetArmy(List<Card> selectedCardsByThePlayer, TextArea txtAreaMsg) {
+		currentPlayer.setArmies(currentPlayer.getArmies() + (5 * currentPlayer.getNumeberOfTimeCardsExchanged()));
+		GameUtilities.addLogFromText(currentPlayer.getName() + " exchanged 3 cards for the army "
+				+ (5 * currentPlayer.getNumeberOfTimeCardsExchanged() + "\n"));
+		for (Country t : currentPlayer.getAssignedCountry()) {
+			for (Card card : selectedCardsByThePlayer) {
+				if (t.equals(card.getCountryToWhichCardBelong())) {
+					t.setArmy(t.getArmy() + 2);
+					GameUtilities.addLogFromText(
+							currentPlayer.getName() + " got 2 extra armies on the " + t.getName() + ".\n");
+					break;
+				}
+			}
+		}
 	}
+
+	/**
+	 * This method is invoked if there can't be another attack for the player.
+	 */
+	public void noMoreAttack() {
+		if (playerList.size() <= 1)
+			return;
+		Platform.runLater(() -> {
+			setChanged();
+			notifyObservers("noMoreAttack");
+		});
+		
+	}
+
+	
 }
