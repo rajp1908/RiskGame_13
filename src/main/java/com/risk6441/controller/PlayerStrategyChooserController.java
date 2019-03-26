@@ -7,7 +7,6 @@ import java.util.ResourceBundle;
 import com.risk6441.configuration.PlayerStrategy;
 import com.risk6441.entity.Player;
 import com.risk6441.gameutilities.GameUtilities;
-import com.risk6441.strategy.Computer;
 import com.risk6441.strategy.Human;
 import com.risk6441.strategy.IStrategy;
 
@@ -64,7 +63,7 @@ public class PlayerStrategyChooserController extends Observable implements Initi
 			if (node.get(1) instanceof ChoiceBox<?>) {
 				PlayerStrategy strategyType = (PlayerStrategy) ((ChoiceBox<?>) node.get(1)).getSelectionModel().getSelectedItem();
 				playerList.get(count).setPlayerStrategy(strategyType);
-				IStrategy strategy = getStrategyObjectForThePlayer(strategyType.toString());
+				Human strategy = getStrategyObjectForThePlayer(strategyType.toString());
 				playerList.get(count).setStrategy(strategy);
 				count++;
 			}
@@ -85,18 +84,16 @@ public class PlayerStrategyChooserController extends Observable implements Initi
 
 	/**
 	 * This method is used for getting the strategy for the player.
+	 * Applied Encapsulate Downcast refactoring 
 	 * @param str string defining type of strategy for the player
 	 * @return strategy object
 	 */
-	private IStrategy getStrategyObjectForThePlayer(String str) {
-		IStrategy strategy = null;
+	private Human getStrategyObjectForThePlayer(String str) {
+		Human strategy = null;
 		System.out.println("string selection"+str.isEmpty());
 		if (str.equals("HUMAN")) {
 			strategy = new Human();
-		} else if (str.equals("COMPUTER")) {
-			strategy = new Computer();
 		}
-		
 		return strategy;
 	}
 
