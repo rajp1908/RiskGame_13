@@ -1,8 +1,12 @@
 package com.risk6441.gameutilities;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Random;
+import java.util.Stack;
 
+import com.risk6441.configuration.CardKind;
+import com.risk6441.entity.Card;
 import com.risk6441.entity.Continent;
 import com.risk6441.entity.Map;
 import com.risk6441.entity.Player;
@@ -49,13 +53,10 @@ public class GameUtilities {
 	
 	/**
 	 * This method allocates armies to the players.
-	 * @param map
-	 * 			map object
-	 * @param players
-	 * 		  		list of the player
-	 * @param textAres
-	 * 				  textArea object
-	 * @throws InvalidMapException Throws IOException if there is an issue while reading a map file.
+	 * @param map  map object
+	 * @param players list of the player
+	 * @param textAres textArea object
+	 * @throws InvalidMap Throws IOException if there is an issue while reading a map file.
 	 */
 	public static void allocateCountryToPlayer(Map map, List<Player> players, TextArea textAres) throws InvalidMap {
 
@@ -115,6 +116,47 @@ public class GameUtilities {
 		System.out.println("Total No of Countries : "+allcountriesList.size());
 		return allcountriesList;
 	}
+	
+	
+	
+	/**
+	 * This method saves a particular card against a country
+	 * @param map map file
+	 * @return stackOfCards returns a stack of cards along with its country
+	 *
+	 */
+	
+	public static Stack<Card> allocateCardToCountry(Map map) {
+		Stack<Card> stackOfCards = new Stack<Card>();
+
+		List<Country> allcountries = getCountryList(map);
+		ArrayList<CardKind> cardsRandaomList = new ArrayList<CardKind>();
+		
+		int eachUniqueCards = allcountries.size() / 3;
+		cardsRandaomList.addAll(Collections.nCopies(eachUniqueCards, CardKind.valueOf("CAVALRY")));
+		cardsRandaomList.addAll(Collections.nCopies(eachUniqueCards, CardKind.valueOf("ARTILLERY")));
+		cardsRandaomList.addAll(Collections.nCopies(eachUniqueCards, CardKind.valueOf("INFANTRY")));
+		int diff = allcountries.size() - cardsRandaomList.size();
+		if(diff > 0) {
+			for(int i=0; i < diff; i++) {
+				System.out.println("inside");
+				cardsRandaomList.add(CardKind.values()[(int) (Math.random() * CardKind.values().length)]);
+			}
+		}
+		int i = 0;
+		for (Country country : allcountries) {
+			Card card = new Card(cardsRandaomList.get(i++));
+			card.setCountryToWhichCardBelong(country);
+			stackOfCards.push(card);
+		}
+		return stackOfCards;
+	}
+	
+	
+	
+	
+	
+	
 	
 	/**
 	 * This method checks whether the fortification phase is completed or not.
