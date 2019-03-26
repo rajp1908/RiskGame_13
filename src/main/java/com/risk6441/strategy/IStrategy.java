@@ -8,7 +8,11 @@ import java.util.stream.Collectors;
 import com.risk6441.entity.Country;
 import com.risk6441.entity.Map;
 import com.risk6441.entity.Player;
-
+import com.risk6441.entity.Country;
+import com.risk6441.exception.InvalidGameAction;
+import com.risk6441.exception.InvalidGameAction;
+import com.risk6441.gameutilities.GameUtilities;
+import com.risk6441.models.PlayerModel;
 
 import javafx.collections.ObservableList;
 import javafx.scene.control.ListView;
@@ -31,6 +35,24 @@ public interface IStrategy extends Serializable{
 			Player currentPlayer,
 			ArrayList<Country> countryArList,ArrayList<Country> adjCountryArList);
 	
+	
+	/**
+	 * This method implements the attack phase of the strategy.
+	 * @param conList listview of country which belong to a player
+	 * @param adjConList adjacent country listview for a particular country
+	 * @param playerModel object of {@link PlayerModel}
+	 * @param playerList list of players
+	 * @param conArList List of country available to player.
+	 * @param adjConArList List of adjacent country.
+	 * @throws InvalidGameAction throws InvalidGameAction if move is not valid
+	 */
+	void attackPhase(ListView<Country> conList, ListView<Country> adjConList,
+			PlayerModel playerModel, List<Player> playerList,
+			ArrayList<Country> conArList,ArrayList<Country> adjConArList) throws InvalidGameAction;
+	
+	
+	
+	
 
 	/**
 	 * This method implements the fortification phase of the strategy.
@@ -48,13 +70,35 @@ public interface IStrategy extends Serializable{
 	
 	
 	/**
-	 * This method gives the defending territories for given territory.
+	 * This method gives the defending countries for given country.
 	 * @param country Selected country
 	 * @return List of defending country.
 	 */
-	default public List<Country> getDefendingTerr(Country country) {
+	default public List<Country> getDefendingCoun(Country country) {
 		List<Country> defCountryList = country.getAdjacentCountries().stream()
 				.filter(t -> (country.getPlayer() != t.getPlayer())).collect(Collectors.toList());
 		return defCountryList;
+	}
+	
+	
+	/**
+	 * Check if the player has a valid attack move
+	 * @param countries List of countries with the player.
+	 * @return Returns true if the player has a valid move available.
+	 */
+	default public boolean hasAValidAttackMove(ArrayList<Country> countries) {
+		boolean isValidAttackMove = false;
+		for (Country con : countries) {
+			if (con.getArmy() > 1 && getDefendingCoun(con).size() > 0) {
+				isValidAttackMove = true;
+				return isValidAttackMove;
+			}
+		}
+		if (!isValidAttackMove) {
+			GameUtilities.addLogFromText("No valid attack move avialble move to Fortification phase.\n");
+			GameUtilities.addLogFromText("===Attack phase ended! === \n");
+			return isValidAttackMove;
+		}
+		return isValidAttackMove;
 	}
 }

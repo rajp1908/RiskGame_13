@@ -26,9 +26,7 @@ import javafx.stage.Stage;
  * @author Dolly
  *
  */
-public class Human implements IStrategy {
-
-	/**
+public class Human implements IStrategy {/**
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
@@ -46,7 +44,7 @@ public class Human implements IStrategy {
 
 		if (currentPlayer.getArmies() > 0) {
 			if (Country == null) {
-				CommonMapUtilities.alertBox("infor", "Please Select a Country.", "Alert");
+				printAlertDialogue("Info", "Please Select a Country.", "Alert");				
 				return;
 			}
 
@@ -54,18 +52,18 @@ public class Human implements IStrategy {
 
 			if (getArmy > 0) {
 				if (getArmy > currentPlayer.getArmies()) {
-					CommonMapUtilities.alertBox("Info",
+					printAlertDialogue("Info",
 							"The Army to be moved in reinforce phase should be less than army you have.", "Alert");
 					return;
 				} else {
 					Country.setArmy(Country.getArmy() + getArmy);
 					currentPlayer.setArmies(currentPlayer.getArmies() - getArmy);
 					//CommonMapUtilities.enableOrDisableSave(false);
-					GameUtilities.addLogFromText("******************  " + getArmy + " assigned to : **************************************** \n" + Country + "  -- Player: "
-							+ currentPlayer.getName() + "\n\n");
+					printText("******************  " + getArmy + " assigned to : **************************************** \n" 
+					                   + Country + "  -- Player: "	+ currentPlayer.getName() + "\n\n");					
 				}
 			} else {
-				CommonMapUtilities.alertBox("Info", "Invalid Input. Number should be > 0.", "Alert");
+				printAlertDialogue("Info", "Invalid Input. Number should be > 0.", "Alert");
 				return;
 			}
 		}
@@ -89,13 +87,13 @@ public class Human implements IStrategy {
 		System.out.println(Country == null);
 		if (Country == null) {
 			System.out.println("Inside null condition");
-			CommonMapUtilities.alertBox("Info", "Please select a Country", "Alert");
+			printAlertDialogue("Info", "Please select a Country", "Alert");
 			return false;
 		} else if (adjCountry == null) {
-			CommonMapUtilities.alertBox("Info", "Please select a adjacent Country", "Alert");
+			printAlertDialogue("Info", "Please select a adjacent Country", "Alert");
 			return false;
 		} else if (adjCountry.getPlayer() != Country.getPlayer()) {
-			CommonMapUtilities.alertBox("Info", "The Adjacent Country does not belong to you.", "Alert");
+			printAlertDialogue("Info", "The Adjacent Country does not belong to you.", "Alert");
 			return false;
 		}
 
@@ -104,20 +102,19 @@ public class Human implements IStrategy {
 		if (armyCount > 0) {
 			System.out.println("ArmyCount" + armyCount);
 			if (armyCount >= Country.getArmy()) {
-				CommonMapUtilities.alertBox("Info", "The Army to be moved in fortification phase should be less than "
+				printAlertDialogue("Info", "The Army to be moved in fortification phase should be less than "
 						+ "existing army in Country.(e.g It can be maximum x-1, if x is the current army in Country.)",
 						"Alert");
 				return false;
 			} else {
 				Country.setArmy(Country.getArmy() - armyCount);
 				adjCountry.setArmy(adjCountry.getArmy() + armyCount);
-				GameUtilities.addLogFromText(
-						armyCount + " armies fortified on Country: " + adjCountry.getName() + " From "+Country.getName()+"\n\n");
-				GameUtilities.addLogFromText("**************    Fortification Phase Ends    ********************************\n\n");
+				printText(armyCount + " armies fortified on Country: " + adjCountry.getName() + " From "+Country.getName()+"\n\n");
+				printText("**************    Fortification Phase Ends    ********************************\n\n");
 				return true;
 			}
 		} else {
-			CommonMapUtilities.alertBox("Info", "Invalid Input. Number should be > 0.", "Alert");
+			printAlertDialogue("Info", "Invalid Input. Number should be > 0.", "Alert");
 			return false;
 		}
 	}
@@ -162,5 +159,22 @@ public class Human implements IStrategy {
 			throw new InvalidGameAction("Please choose both attacking and defending Country.");
 		}
 	}
-
-}
+	/**
+	 * This is a refactored method(Extract method)
+	 * It prints alert dialogue box
+	 * @param title
+	 * @param message
+	 * @param header
+	 */
+	private void printAlertDialogue(String title,String message,String header) {
+		CommonMapUtilities.alertBox(title, message, header);
+	}
+	
+	/**
+	 * This is a refactored method(Extract Method)
+	 * This method prints text on the TextArea of javafx
+	 * @param text
+	 */
+	private void printText(String text) {
+		GameUtilities.addLogFromText(text);
+	}}
