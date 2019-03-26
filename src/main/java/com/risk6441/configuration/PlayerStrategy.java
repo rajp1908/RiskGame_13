@@ -8,5 +8,5 @@ package com.risk6441.configuration;
  * @author Deep
  */
 public enum PlayerStrategy {
-	HUMAN, COMPUTER;
+	HUMAN;
 }
