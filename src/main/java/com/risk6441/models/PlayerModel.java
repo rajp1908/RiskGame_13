@@ -28,6 +28,7 @@ import javafx.scene.control.TextArea;
 /**
  * @author Dolly
  * @author Hardik
+ * @author Jemish
  */
 @SuppressWarnings("restriction")
 public class PlayerModel extends Observable implements Observer, Serializable {
