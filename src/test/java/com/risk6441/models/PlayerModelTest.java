@@ -10,14 +10,18 @@ import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-
+import com.risk6441.configuration.CardKind;
 import com.risk6441.configuration.Configuration;
 import com.risk6441.configuration.PlayerStrategy;
+import com.risk6441.entity.Card;
 import com.risk6441.entity.Continent;
 import com.risk6441.entity.Map;
 import com.risk6441.entity.Player;
+import com.risk6441.exception.InvalidGameAction;
 import com.risk6441.entity.Country;
 import com.risk6441.gameutilities.GameUtilities;
+import com.risk6441.strategy.Human;
+
 import javafx.embed.swing.JFXPanel;
 import javafx.fxml.FXML;
 import javafx.scene.control.ListView;
@@ -286,7 +290,48 @@ public class PlayerModelTest {
 	}
 	
 	
+	/**
+	 * This method tests the attach phase has a valid attack move or not.
+	 * @throws InvalidGameAction if move is not valid
+	 */
+	@Test
+	public void testIsValidAttackMoveTrue() throws InvalidGameAction{
+		Player player2 = new Player(2, "B");
+		coun1.setPlayer(player);
+		coun2.setPlayer(player2);
+		coun1.setArmy(3);
+		Assert.assertEquals(true, playerModel.isValidAttackMove(coun1, coun2));
+	}
 	
+	
+	/**
+	 *  This method tests the attack phase has a valid attack move or not.
+	 */
+	@Test
+	public void testPlayerHasValidAttackMoveTrue() {
+		coun1.setArmy(5);
+		coun2.setArmy(3);
+		coun1.getPlayer().setStrategy(new Human());
+		playerModel.setCurrentPlayer(coun1.getPlayer());
+		boolean actualResult = playerModel.hasValidAttackMove(new ArrayList<>(counListView.getItems()));
+		Assert.assertTrue(actualResult);
+	}
+
+	/**
+	 * This method tests the case in which if any player lost the game.
+	 */
+	@Test
+	public void testCheckAnyPlayerLostTheGame() {
+		playerList = new ArrayList<>();
+		playerList.add(new Player(0, "Player0"));
+		playerList.add(player);
+		player.setArmies(10);
+		playerModel.setCurrentPlayer(player);
+		
+		playerList.get(0).setAssignedCountry(new ArrayList<>());
+		Player playerLost = playerModel.checkAnyPlayerLostTheGame(playerList);
+		Assert.assertEquals(0, playerLost.getAssignedCountry().size());
+	}
 
 	
 	
@@ -304,6 +349,30 @@ public class PlayerModelTest {
 		Assert.assertEquals(3, playerTest.size());
 	}
 	
+	
+	@Test
+	public void testGameOver() {
+		List<Player> playerListForPlayer = new ArrayList<>();
+		playerList = new ArrayList<>();
+		Player player1 = new Player(0, "Player0");
+		playerList.add(player1);
+		playerList.add(new Player(1, "Player1"));
+		playerList.add(new Player(2, "Player2"));
+		
+		coun1.setPlayer(player1);
+		player1.getAssignedCountry().add(coun1);
+		
+		playerModel.setCurrentPlayer(player1);
+		Player p = playerModel.checkAnyPlayerLostTheGame(playerListForPlayer);
+		if(p!=null) {
+			playerListForPlayer.remove(p);
+		}
+		playerModel.checkAnyPlayerLostTheGame(playerListForPlayer);
+		if(p!=null) {
+			playerListForPlayer.remove(p);
+		}
+		Assert.assertEquals(0, playerListForPlayer.size());
+	}
 	
 	/**
 	 *  This method tests that if fortification phase is valid or not.
@@ -332,6 +401,23 @@ public class PlayerModelTest {
 		System.out.println("Now here" +coun2.getArmy());
 		boolean isFortificationPhaseValid = playerModel.isFortificationPhasePossible(map, player);
 		Assert.assertEquals(false, isFortificationPhaseValid);
+	}
+	
+	
+	/**
+	 * This method tests the trading of the cards for the army.
+	 */
+	@Test
+	public void testTradeCardsAndGetArmyValid1() {
+		List<Card> listOfCards = new ArrayList<>();
+		listOfCards.add(new Card(CardKind.ARTILLERY));
+		listOfCards.add(new Card(CardKind.CAVALRY));
+		listOfCards.add(new Card(CardKind.INFANTRY));
+		player.setArmies(0);
+		playerModel.setCurrentPlayer(player);
+		player.setNumeberOfTimesCardsExchanged(1);
+		playerModel.tradeCardsAndGetArmy(listOfCards);
+		Assert.assertEquals(5, player.getArmies());
 	}
 	
 	
