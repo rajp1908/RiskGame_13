@@ -20,6 +20,7 @@ import java.util.Stack;
 import java.util.Map.Entry;
 
 import com.risk6441.configuration.Configuration;
+import com.risk6441.entity.Card;
 import com.risk6441.entity.Continent;
 import com.risk6441.entity.Country;
 import com.risk6441.entity.Map;
@@ -28,6 +29,7 @@ import com.risk6441.exception.InvalidGameAction;
 import com.risk6441.exception.InvalidMap;
 import com.risk6441.gameutilities.GameUtilities;
 import com.risk6441.maputilities.CommonMapUtilities;
+import com.risk6441.models.CardModel;
 import com.risk6441.models.GameUIStateModel;
 import com.risk6441.models.PlayerModel;
 import com.risk6441.models.WorldDominationModel;
@@ -95,6 +97,13 @@ public class PlayGameController extends Observable implements Initializable, Obs
 
 	private Iterator<Player> playerListIterator;
 	
+	private Stack<Card> stackOfCards;
+	
+	private CardModel cardModel;
+	
+	@FXML
+	private PieChart worldDominationPieChart;
+	
 	@FXML
     private ListView<Country> counList;
 
@@ -116,11 +125,14 @@ public class PlayGameController extends Observable implements Initializable, Obs
     @FXML
     private Label lblGamePhase;
 
-//    @FXML
-//    private Button btnNoMoreAttack;
+    @FXML
+    private Button btnNoAttack;
 
     @FXML
     private Button btnFortify;
+    
+    @FXML
+    private Button btnCards;
 
     @FXML
     private Button btnEndTurn;
@@ -142,7 +154,7 @@ public class PlayGameController extends Observable implements Initializable, Obs
 
 	public GameUIStateModel state;
 
-//	private int attackCount = 5;
+	private int attackCount = 5;
 
 	private int numOfTurnDone;
 
@@ -175,14 +187,22 @@ public class PlayGameController extends Observable implements Initializable, Obs
 	@FXML
 	void endTrun(ActionEvent event) {
 		GameUtilities.addLogFromText(currentPlayer.getName() + " ended his turn.\n");
-	/*	if (playerModel.getNumOfCountryWon() > 0) {
+		if (playerModel.getNumOfCountryWon() > 0) {
 			allocateCardToPlayer();
-		}*/
+		}
 		playerModel.endTurn();
 	}
 
+	/**
+	 * This method will open the card pane
+	 * 
+	 * @param event button click event will be passes as parameter
+	 */
+	@FXML
+	void openCardPane(ActionEvent event) {
+		cardModel.openCardWindow(false);
+	}
 	
-
 	/**
 	 * This method will be called by user to start the fortification phase
 	 * 
@@ -243,14 +263,13 @@ public class PlayGameController extends Observable implements Initializable, Obs
 	@FXML
 	void reinforce(ActionEvent event) {
 		Country country = counList.getSelectionModel().getSelectedItem();
-//			if (currentPlayer.getStrategy() instanceof Human) {
-//	//			CommonMapUtilities.alertBox("Info", "You Risk Cards >= 5, please exchange these cards for the army.",
-//	//					"Info");
-//	//			return;
-//			} else {
-//
-//			}
-		
+		if(currentPlayer.getCardList().size() >= 5) {
+			if (currentPlayer.getStrategy() instanceof Human) {
+				CommonMapUtilities.alertBox("Info", "You Risk Cards >= 5, please exchange these cards for the army.",
+						"Info");
+				return;
+			}
+		}
 		reinforceArmy(country);
 	}
 
@@ -274,23 +293,41 @@ public class PlayGameController extends Observable implements Initializable, Obs
 	 * 
 	 * @param event event button click event will be passed as a parameter
 	 */
-//	@FXML
-//	void noMoreAttack(ActionEvent event) {
-//		System.out.println("Inside pgc noMoreAttack");
-//		refreshList();
-//		if (playerList.size() <= 1) {
-//			disableGameControls();
-//			return;
-//		}
-////		GameUtilities.addLogFromText("**** Attack phase ended! ****\n");
-//		/*if (playerModel.getNumOfCountryWon() > 0) {
-//			allocateCardToPlayer();
-//		}*/
-//		CommonMapUtilities.enableControls(btnEndTurn);
-//
-//		isValidFortificationPhase();
-//	}
+	@FXML
+	void noAttack(ActionEvent event) {
+		System.out.println("Inside pgc noMoreAttack");
+		refreshList();
+		if (playerList.size() <= 1) {
+			disableGameControls();
+			return;
+		}
+		GameUtilities.addLogFromText("**** Attack phase ended! ****\n");
+		if (playerModel.getNumOfCountryWon() > 0) {
+			allocateCardToPlayer();
+		}
+		CommonMapUtilities.enableControls(btnEndTurn);
 
+		isValidFortificationPhase();
+	}
+
+	/**
+	 * This method Allocate cards to player
+	 */
+	private void allocateCardToPlayer() {
+		System.out.println("Allocating Cards to Player");
+		try {
+			Card card = stackOfCards.pop();
+			currentPlayer.getCardList().add(card);
+			GameUtilities.addLogFromText(
+					currentPlayer.getName() + " has been assigned a card with type " + card.getCardKind().toString()
+							+ " and country " + card.getCountryToWhichCardBelong().getName() + "\n");
+			System.out.println(currentPlayer.getName() + " has been assigned a card with type " + card.getCardKind().toString()
+							+ " and country " + card.getCountryToWhichCardBelong().getName() + "\n");
+		} catch (Exception e) {
+			 e.printStackTrace();
+		}
+		playerModel.setNumOfCountryWon(0);
+	}
 
 	/**
 	 * check if there is a valid fortification phase.
@@ -307,7 +344,9 @@ public class PlayGameController extends Observable implements Initializable, Obs
 	public PlayGameController(Map map) {
 		this.map = map;
 		this.playerModel = new PlayerModel();
+		this.cardModel = new CardModel();
 		playerModel.addObserver(this);
+		cardModel.addObserver(this);
 		playerList = new ArrayList<Player>();
 	}
 
@@ -350,11 +389,11 @@ public class PlayGameController extends Observable implements Initializable, Obs
 			playerListIterator = playerList.iterator();
 		}
 		currentPlayer = playerListIterator.next();
-		if(!(currentPlayer.getStrategy() instanceof Human)) {
-//			CommonMapUtilities.enableOrDisableSave(false);
-		}
+		
+		cardModel.setCurrentPlayer(currentPlayer);
 		playerModel.setPlayerList(playerList);
 		playerModel.setCurrentPlayer(currentPlayer);
+		playerModel.setNumOfCountryWon(0);
 		GameUtilities.addLogFromText("********************************************************** \n");
 		GameUtilities.addLogFromText(currentPlayer.getName() + "!------.started playing.\n");
 		refreshList();
@@ -377,7 +416,16 @@ public class PlayGameController extends Observable implements Initializable, Obs
 		return false;
 	}
 
-
+	/**
+	 * This method allocates cards to countries.
+	 */
+	private void allocateCardTOCountries() {
+		GameUtilities.addLogFromText("**************  Assigning Cards to Countries  **************\n");
+		stackOfCards = GameUtilities.allocateCardToCountry(map);
+		Collections.shuffle(stackOfCards);
+		GameUtilities.allocateCardToCountry(map);
+		GameUtilities.addLogFromText("**************  Cards assignation complete  **************\n");
+	}
 
 	/**
 	 * This method allocates countries to the player and start the game.
@@ -405,6 +453,8 @@ public class PlayGameController extends Observable implements Initializable, Obs
 		Configuration.isAllComputerPlayer = true;
 		lblGamePhase.setText("Phase =>  Start  !");
 		updateMap();
+		allocateCardTOCountries();
+		CommonMapUtilities.disableControls(btnNoAttack, btnCards);
 		GameUtilities.txtMsgArea = txtAreaMsg;
 		listenerForNumberOfPlayer();
 		
@@ -486,52 +536,7 @@ public class PlayGameController extends Observable implements Initializable, Obs
 		stage.show();
 	}
 
-	/**
-	 * This method loads the game panel after loading the saved game.
-	 */
-	private void loadMapDataAfterLoadingSavedGame() {
-		CommonMapUtilities.disableControls(choiceBoxNoOfPlayer);
-		lblCurrPlayer.setText(lblPlayerString);
-		lblGamePhase.setText(phaseOfTheGame);
-		GameUtilities.addLogFromText(txtMsgAreaTxt);
-		showMilitaryDominationData();
-
-		counList.getItems().addAll(FXCollections.observableArrayList(currentPlayer.getAssignedCountry()));
-		
-		if (state.isPlaceArmyEnable)
-			CommonMapUtilities.enableControls(btnPlaceArmy);
-		
-		if (state.choiceBoxNoOfPlayer)
-			CommonMapUtilities.enableControls(choiceBoxNoOfPlayer);
-
-		if (state.isReinforcemetnEnable)
-			CommonMapUtilities.enableControls(btnReinforcement);
-
-//		if (state.isNoMoreAttackEnable)
-//			CommonMapUtilities.enableControls(btnNoMoreAttack);
-
-		if (state.isFortificationEnable)
-			CommonMapUtilities.enableControls(btnFortify);
-
-		if (state.isEndTurnEnable)
-			CommonMapUtilities.enableControls(btnEndTurn);
-
-		playerListIterator = playerList.iterator();
-		System.out.println(playerList);
-
-		playerListIterator = playerList.iterator();
-
-
-		
-		int count = 0;
-		System.out.println(count);
-		while (playerListIterator.hasNext()) {
-			if (playerListIterator.next().equals(currentPlayer)) {
-				System.out.println(count);
-				break;
-			}
-		}
-	}
+	
 
 	/**
 	 * Show adjacent countries of the particular country
@@ -576,18 +581,13 @@ public class PlayGameController extends Observable implements Initializable, Obs
 		if (country.isProcessed() == true) {
 			return;
 		}
-		System.out.println(country.getName());
 		country.setProcessed(true);
-		System.out.println("adding to list:"+country.equals(counList.getSelectionModel().getSelectedItem()));
 		if (!country.equals(counList.getSelectionModel().getSelectedItem())) {
-			System.out.println("if con");
 			reachableCounList.add(country);
 		}
 		for (Country t : country.getAdjacentCountries()) {
-			System.out.println(t.getName());
-			System.out.println(t.isProcessed() + "Player:"+t.getPlayer().equals(this.currentPlayer));
-			if (t.isProcessed() == false) {
-				System.out.println("andar");
+			
+			if (t.isProcessed() == false && t.getPlayer().equals(this.currentPlayer)) {
 				bfsCountry(t, reachableCounList);
 			}
 		}
@@ -604,20 +604,48 @@ public class PlayGameController extends Observable implements Initializable, Obs
 			vbox.getChildren().add(CommonMapUtilities.getNewPaneForVerticalBox(c));
 		}
 	}
+	
+	/**
+	 * This method intializes the components for the attack phase.
+	 */
+	public void initializeAttack() {
+		GameUtilities.addLogFromText("===============================\n");
+		GameUtilities.addLogFromText("The Attack phase has begun.\n");
+//		CommonMapUtilities.enableOrDisableSave(true);
+		ArrayList<Country> counArList = new ArrayList<>(counList.getItems());
+		refreshList();
+		
+		if (playerModel.hasValidAttackMove(counArList)) {
+			CommonMapUtilities.enableControls(btnEndTurn, btnNoAttack);
+			CommonMapUtilities.disableControls(btnReinforcement, btnFortify, btnPlaceArmy);
+		}else {
+			CommonMapUtilities.disableControls(btnCards);
+			CommonMapUtilities.enableControls(btnNoAttack);
+			return;
+		}
+		if (currentPlayer.getStrategy() instanceof Human) {
+			adjCounList.setOnMouseClicked(e -> attack());
+		}else {
+			attack();
+		}
+	}
+	
+	
+	
 	/**
 	 * This method initializes the components for the fortification phase.
 	 */
 	private void initializeFortification() {
 		refreshList();
-	/*	if (playerModel.getNumOfCountryWon() > 0) {
+		if (playerModel.getNumOfCountryWon() > 0) {
 			allocateCardToPlayer();
 		}
-		*/
+		
 		GameUtilities.addLogFromText("\n***************************************************************\n");
 		GameUtilities.addLogFromText("               Fortification phase Begins  \n\n");
 //		CommonMapUtilities.enableOrDisableSave(true);
 		btnFortify.setDisable(false);
-//		CommonMapUtilities.disableControls(btnNoMoreAttack);
+		CommonMapUtilities.disableControls(btnNoAttack);
 		btnFortify.requestFocus();
 		CommonMapUtilities.disableControls(btnReinforcement);
 		if (!(currentPlayer.getStrategy() instanceof Human)) {
@@ -643,9 +671,9 @@ public class PlayGameController extends Observable implements Initializable, Obs
 		GameUtilities.addLogFromText(currentPlayer.getName() + " does not have any armies for fortification.\n");
 		GameUtilities.addLogFromText(" Fortification phase ended  \n");
 		setPhase("Phase : Reinforcement");
-		/*if(playerModel.getNumOfCountryWon()>0) {
+		if(playerModel.getNumOfCountryWon()>0) {
 			allocateCardToPlayer();
-		}*/
+		}
 		initializeReinforcement(false);
 	}
 
@@ -660,21 +688,19 @@ public class PlayGameController extends Observable implements Initializable, Obs
 		refreshList();
 		
 //		CommonMapUtilities.enableOrDisableSave(true);
-		
+		CommonMapUtilities.enableControls(btnCards);
 		loadCurrentPlayer(loadPlayerFromStart);
-		CommonMapUtilities.disableControls(btnPlaceArmy, btnFortify, btnEndTurn);
+		CommonMapUtilities.disableControls(btnPlaceArmy, btnFortify, btnEndTurn, btnNoAttack);
 		btnReinforcement.setDisable(false);
 		btnReinforcement.requestFocus();
 		GameUtilities.addLogFromText("\n***************************************************************\n");
 		GameUtilities.addLogFromText("               Reinforcement phase Begins  \n\n");
 		GameUtilities.addLogFromText(currentPlayer.getName() + "\n");
 		countReinforcementArmies();
-		if (!(currentPlayer.getStrategy() instanceof Human)) {
-			reinforceArmy(null);
+		if ((currentPlayer.getStrategy() instanceof Human)) {
+			cardModel.openCardWindow(false);
 		} 
-//		else {		
-//			
-//		}
+
 	}
 
 	/**
@@ -691,6 +717,69 @@ public class PlayGameController extends Observable implements Initializable, Obs
 		}
 	}
 
+	/**
+	 * Check if any player has lost the game
+	 * 
+	 * @return true if any player lost the game else false.
+	 */
+	private boolean checkIfAnyPlayerLostTheMatch() {
+		Player playerLost = playerModel.checkAnyPlayerLostTheGame(playerList);
+		if (playerLost != null) {
+			
+			playerList.remove(playerLost);
+			this.playerLost = playerLost;
+			
+			
+			playerModel.setPlayerList(playerList);
+
+			CommonMapUtilities.alertBox("Info",
+					"Player: " + playerLost.getName() + " lost all his Country and no more in the game.", "Info");
+			System.out.println("Player: " + playerLost.getName() + " lost all his Country and no more in the game.");
+			GameUtilities.addLogFromText(gameNo+" - "+playerLost.getName() + " lost all Countries and lost the game.\n");
+			GameUtilities.addLogFromText("==============================================================\n");
+			return true;
+		}
+		return false;
+	}
+	
+	/**
+	 * Refresh View
+	 */
+	private void refreshView() {
+		
+		if (checkIfAnyPlayerLostTheMatch()) {
+			//if one player is lost then it might be more than 2
+			while(checkIfAnyPlayerLostTheMatch());
+			
+			// check if player has more than 6 cards now, open card window, and allow to
+			// trade cards till he has cards less than 5
+			System.out.println("Inside open card window " + currentPlayer.getCardList().size());
+			if (currentPlayer.getCardList().size() > 5 && playerList.size() > 1) {
+				if (currentPlayer.getStrategy() instanceof Human) {
+					cardModel.openCardWindow(true);
+				} else {
+					cardModel.openCardWindowForOther(true);
+				}
+				return;
+			}
+
+		}
+		
+		CommonMapUtilities.enableControls(btnEndTurn, btnNoAttack);
+
+		refreshList();
+		updateMap();
+
+		setLabelAndShowWorldDomination();
+		showContinentThatBelongsToPlayer();
+
+		if (checkIfPlayerWonTheGame()) {
+			GameUtilities.addLogFromText("Game Over "+gameNo+"\n");
+		}else if(currentPlayer.getStrategy() instanceof Human) {
+			ArrayList<Country> counArList = new ArrayList<>(counList.getItems());
+			playerModel.hasValidAttackMove(counArList);
+		}
+	}
 	
 	/**
 	 * This method refreshes the lists.
@@ -709,7 +798,32 @@ public class PlayGameController extends Observable implements Initializable, Obs
 	 */
 	private void setLabelAndShowWorldDomination() {
 		setCurrentPlayerLabel(currentPlayer.getName() + " => " + currentPlayer.getArmies() + " armies left.\n");
-		showMilitaryDominationData();
+		showWorldDominationData();
+		showMilitaryDominationData();		
+	}
+	
+	/**
+	 * This method populates World Domination Data into pie chart.
+	 */
+	private void showWorldDominationData() {
+		HashMap<Player, Double> playerTerPercent = WorldDominationModel.getWorldDominationData(map);
+		ArrayList<Data> chartData = new ArrayList<>();
+		ObservableList<PieChart.Data> pieData = FXCollections.observableArrayList();
+		for (Entry<Player, Double> entry : playerTerPercent.entrySet()) {
+			double d = entry.getValue();
+			String value = "";
+			try {
+				value = String.valueOf(d).substring(0, 4);
+			}catch (Exception e) {
+				value = String.valueOf(d).substring(0, 2);
+			}
+			String label = entry.getKey().getName();
+			label += "-" + value + "%";
+			System.out.println(label);
+			chartData.add(new PieChart.Data(label, d));
+		}
+		pieData.addAll(chartData);
+		worldDominationPieChart.setData(pieData);
 	}
 
 	/**
@@ -753,15 +867,15 @@ public class PlayGameController extends Observable implements Initializable, Obs
 	 */
 	private void disableGameControls() {
 		
-		CommonMapUtilities.disableControls(counList, adjCounList, btnReinforcement, btnFortify,
+		CommonMapUtilities.disableControls(counList, adjCounList, btnReinforcement, btnFortify, btnNoAttack, btnCards,
 				btnEndTurn);//btnNoMoreAttack
-//		btnNoMoreAttack.setDisable(true);
+		btnNoAttack.setDisable(true);
 		lblGamePhase.setText("GAME OVER");
 		setCurrentPlayerLabel(playerList.get(0).getName().toUpperCase() + " WON THE GAME");
 		updateMap();
 		setLabelAndShowWorldDomination();
 		GameUtilities.addLogFromText("********************************************************************************\n");
-		System.out.println(gameNo+" - "+playerList.get(0).getName() + " WON THE GAME");
+		GameUtilities.addLogFromText(playerList.get(0).getName().toUpperCase() + " WON THE GAME \n");
 		GameUtilities.addLogFromText("*******************************************************************************\n");
 		
 	}
@@ -782,15 +896,18 @@ public class PlayGameController extends Observable implements Initializable, Obs
 		}
 		
 
-		if (str.equals("ReinforcementFirst")) {
+		if (str.equals("rollDiceComplete")) {
+			refreshView();
+		} else if (str.equals("Attack")) {
+			setPhase("Phase : Attack");
+			initializeAttack();
+		} else if (str.equals("ReinforcementFirst")) {
 			setPhase("Phase : Reinforcement");
 			initializeReinforcement(true);
 		} else if (str.equals("Reinforcement")) {
 			setPhase("Phase : Reinforcement");
 			initializeReinforcement(false);
-		}else if( str.equals("Attack")){
-			attack();
-		}else if (str.equals("placeArmy")) {
+		} else if (str.equals("placeArmy")) {
 			setPhase("Phase : Place Army");
 			initializePlaceArmy();	
 			showMilitaryDominationData();
@@ -801,7 +918,12 @@ public class PlayGameController extends Observable implements Initializable, Obs
 		} else if (str.equals("NoFortification")) {
 			setPhase("Phase : No Fortification");
 			noFortification();
-		}else if (str.equals("checkForValidFortificaion")) {
+		} else if (str.equals("tradeCard")) {
+			tradeCards();
+		} else if (str.equals("opencardWindowForCardExchangeTillLessThan5")) {
+			cardModel.openCardWindow(true);
+			System.out.println("Inside 5 more cards");
+		} else if (str.equals("checkForValidFortificaion")) {
 			refreshList();
 			isValidFortificationPhase();
 		} else if (str.equals("playerStrategyChoosen")) {
@@ -810,25 +932,34 @@ public class PlayGameController extends Observable implements Initializable, Obs
 			GameUtilities.addLogFromText(Configuration.message);
 			Configuration.message = "";
 		} else if (str.equals("noMoreAttack")) {
-//			noMoreAttack(null);
+			attackCount = 5;
+			noAttack(null);
 		} else if (str.equals("skipAndGoToFortify")) {
-//			noMoreAttack(null);
-		}else if (str.equals("disableGameControls")) {
+			refreshView();
+			noAttack(null);
+		} else if (str.equals("disableGameControls")) {
 			disableGameControls();
 		}else if(str.equals("updateReinforceArmy")) {
-			setCurrentPlayerLabel(currentPlayer.getName() + " =>  " + currentPlayer.getArmies() + " armies left.");
+			setCurrentPlayerLabel(currentPlayer.getName() + ":- " + currentPlayer.getArmies() + " armies left.");
 			counList.refresh();
 		}
 	}
 
+	/**
+	 * This method starts the attack adjacent Country for the player.
+	 */
 	public void attack() {
-		try {
-			playerModel.attackPhase(counList, adjCounList, txtAreaMsg);
-		} catch (InvalidGameAction e) {
-			// TODO: handle exception
-			CommonMapUtilities.alertBox("Info", e.getMessage(), "alert");
+
+		if (!lblGamePhase.getText().contains("Attack") && currentPlayer.getStrategy() instanceof Human) {
 			return;
 		}
+		try {
+			playerModel.attackPhase(counList, adjCounList, txtAreaMsg);
+		} catch (InvalidGameAction ex) {
+			CommonMapUtilities.alertBox("Info", ex.getMessage(), "Alert");
+			return;
+		}
+		
 	}
 	/**
 	 * This method assigns armies and countries to players.
@@ -860,6 +991,7 @@ public class PlayGameController extends Observable implements Initializable, Obs
 			allocateCountriesToPlayer();
 			setPhase("Phase : Place Army");
 			loadCurrentPlayer(false);
+			showWorldDominationData();
 			showMilitaryDominationData();
 		} catch (InvalidMap e) {
 			CommonMapUtilities.alertBox("Alert", e.getMessage(), "Error");
@@ -886,6 +1018,23 @@ public class PlayGameController extends Observable implements Initializable, Obs
 		}
 		Configuration.isPopUpShownInAutoMode = false;
 		return true;
+	}
+	
+	/**
+	 * This method trades the cards of the player for that army.
+	 */
+	private void tradeCards() {
+		List<Card> selectedCardsOfThePlayer = cardModel.getCardsToBeExchange();
+		currentPlayer.setNumeberOfTimesCardsExchanged(currentPlayer.getNumeberOfTimeCardsExchanged() + 1);
+		playerModel.tradeCardsAndGetArmy(selectedCardsOfThePlayer);
+		currentPlayer.getCardList().removeAll(selectedCardsOfThePlayer);
+		stackOfCards.addAll(selectedCardsOfThePlayer);
+		Collections.shuffle(stackOfCards);
+		counList.refresh();
+		adjCounList.refresh();
+		updateMap();
+		showMilitaryDominationData();
+		setCurrentPlayerLabel(currentPlayer.getName() + ":- " + currentPlayer.getArmies() + " armies left.");
 	}
 
 	/**
@@ -915,7 +1064,9 @@ public class PlayGameController extends Observable implements Initializable, Obs
 		out.writeObject(currentPlayer);
 
 		out.writeObject(playerModel);
-		
+		out.writeObject(cardModel);
+
+		out.writeObject(stackOfCards);
 		out.writeObject(playerList);
 
 		state = new GameUIStateModel();
@@ -932,10 +1083,13 @@ public class PlayGameController extends Observable implements Initializable, Obs
 			state.isReinforcemetnEnable = true;
 		}
 
+		if (!btnCards.isDisabled()) {
+			state.isCardsEnable = true;
+		}
 
-//		if (!btnNoMoreAttack.isDisabled()) {
-//			state.isNoMoreAttackEnable = true;
-//		}
+		if (!btnNoAttack.isDisabled()) {
+			state.isNoMoreAttackEnable = true;
+		}
 
 		if (!btnFortify.isDisabled()) {
 			state.isFortificationEnable = true;
@@ -950,7 +1104,6 @@ public class PlayGameController extends Observable implements Initializable, Obs
 		out.writeObject(txtAreaMsg.getText());
 		out.writeObject(lblGamePhase.getText());
 		out.writeObject(lblCurrPlayer.getText());
-
 	}
 
 	/*
@@ -966,7 +1119,9 @@ public class PlayGameController extends Observable implements Initializable, Obs
 		currentPlayer = (Player) in.readObject();
 
 		playerModel = (PlayerModel) in.readObject();
+		cardModel = (CardModel) in.readObject();
 		
+		stackOfCards = (Stack<Card>) in.readObject();
 		playerList = new ArrayList<>();
 		playerList = (List<Player>) in.readObject();
 
@@ -977,7 +1132,7 @@ public class PlayGameController extends Observable implements Initializable, Obs
 		lblPlayerString = (String) in.readObject();
 
 		playerModel.addObserver(this);
-
+		cardModel.addObserver(this);
 		
 	}
 	
@@ -995,24 +1150,28 @@ public class PlayGameController extends Observable implements Initializable, Obs
 		lblCurrPlayer = new Label();
 		lblGamePhase = new Label("Start Up");
 		btnPlaceArmy = new Button();
-		CategoryAxis xAxis    = new CategoryAxis();
+		worldDominationPieChart = new PieChart();
+		CategoryAxis xAxis = new CategoryAxis();
 		NumberAxis yAxis = new NumberAxis();
 		armyDominationChart = new BarChart(xAxis, yAxis);
 		btnFortify = new Button();
-//		btnNoMoreAttack = new Button();
+		btnNoAttack = new Button();
+		btnCards = new Button();
 		btnEndTurn = new Button();
 		counList = new ListView<Country>();
 		adjCounList = new ListView<Country>();
 		txtAreaMsg = new TextArea();
 		vbox = new VBox();
 		choiceBoxNoOfPlayer = new ChoiceBox<>();
+		allocateCardTOCountries();
 		
-	
+		
 		Configuration.waitBeweenTurn = 1000;
 		Configuration.isPopUpShownInAutoMode = false;
 		
 		GameUtilities.txtMsgArea = console;
 		
+//		CommonMapUtilities.btnSave  = btnSaveGame;
 		
 	}
 

@@ -544,7 +544,7 @@ public class MapRedactorController implements Initializable{
 
 			@Override
 			public void handle(MouseEvent event) {
-				onClickContList();
+				onClickContinentList();
 			}
 		});
 		
@@ -553,7 +553,7 @@ public class MapRedactorController implements Initializable{
 
 			@Override
 			public void handle(MouseEvent event) {
-				onClickCounList();
+				onClickCountryList();
 			}
 		});
 		
@@ -590,7 +590,7 @@ public class MapRedactorController implements Initializable{
 	/**
 	 * This method is to perform operations on the selected continent like update, delete etc
 	 */
-	public void onClickContList() {
+	public void onClickContinentList() {
 		Continent cnt = contList.getSelectionModel().getSelectedItem();
 		txtContName.setText(cnt.getName());
 		txtContControlVal.setText(String.valueOf(cnt.getValue()));
@@ -637,7 +637,7 @@ public class MapRedactorController implements Initializable{
 	/**
 	 * This method is to perform operations on the selected Country like update, delete etc
 	 */
-	public void onClickCounList() {
+	public void onClickCountryList() {
 		Country coun = counList.getSelectionModel().getSelectedItem();
 		txtCounName.setText(coun.getName());
 		txtXCo.setText(String.valueOf(coun.getxCoordinate()));
