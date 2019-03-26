@@ -9,14 +9,14 @@ import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-
+import com.risk6441.entity.Card;
 import com.risk6441.entity.Continent;
 import com.risk6441.entity.Map;
 import com.risk6441.entity.Player;
 import com.risk6441.entity.Country;
 import com.risk6441.exception.InvalidMap;
 import com.risk6441.gameutilities.GameUtilities;
-import com.risk6441.models.PlayerModel;
+
 
 import javafx.embed.swing.JFXPanel;
 import javafx.fxml.FXML;
@@ -107,6 +107,14 @@ public class GameUtilitiesTest {
 	
 
 
+	/**
+	 * This method tests the allocation of cards to country is working or not.
+	 */
+	@Test
+	public void testAssignCardToCountry() {
+		Stack<Card> cardStacks = GameUtilities.allocateCardToCountry(map);
+		Assert.assertNotNull(cardStacks);		
+	}
 	
 	/**
 	 * This method tests the allocation of country to player is working or not.
