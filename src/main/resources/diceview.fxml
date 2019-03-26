@@ -21,8 +21,8 @@
             </HBox>
             <HBox alignment="TOP_CENTER" prefHeight="32.0" prefWidth="470.0">
                <children>
-                  <Label fx:id="lblAttackerTerritoryName" alignment="CENTER" contentDisplay="CENTER" prefHeight="42.0" prefWidth="196.0" text="attackerTerritoryName" wrapText="true" />
-                  <Label fx:id="lblDefenderTerritoryName" alignment="CENTER" contentDisplay="CENTER" prefHeight="42.0" prefWidth="199.0" text="defenderTerritoryName" wrapText="true" />
+                  <Label fx:id="lblAttackerCountryName" alignment="CENTER" contentDisplay="CENTER" prefHeight="42.0" prefWidth="196.0" text="attackerCountryName" wrapText="true" />
+                  <Label fx:id="lblDefenderCountryName" alignment="CENTER" contentDisplay="CENTER" prefHeight="42.0" prefWidth="199.0" text="defenderCountryName" wrapText="true" />
                </children>
             </HBox>
             <HBox alignment="TOP_CENTER" prefHeight="31.0" prefWidth="470.0">
@@ -45,7 +45,7 @@
             <Label fx:id="lblNoOfArmies" layoutX="2.0" layoutY="23.0" text="No. of Armies to Move:" />
             <TextField fx:id="txtNumberOfArmiesInput" layoutX="147.0" layoutY="18.0" prefHeight="31.0" prefWidth="52.0" />
             <Button fx:id="btnMoveArmies" layoutX="221.0" layoutY="18.0" mnemonicParsing="false" onAction="#moveArmies" prefHeight="31.0" prefWidth="64.0" text="Move" />
-            <Button fx:id="btnSkipMoveArmy" layoutX="404.0" layoutY="18.0" mnemonicParsing="false" onAction="#skipMoveArmy" prefHeight="31.0" prefWidth="113.0" text="Skip Move Army Phase">
+            <Button fx:id="btnSkipMoveArmy" layoutX="404.0" layoutY="18.0" mnemonicParsing="false" onAction="#skipMoveArmy" prefHeight="31.0" prefWidth="113.0" text="Skip Move Army Phase" visible="false">
                <font>
                   <Font size="9.0" />
                </font></Button>

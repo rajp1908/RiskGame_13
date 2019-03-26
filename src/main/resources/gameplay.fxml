@@ -14,19 +14,21 @@
       <AnchorPane layoutX="345.0" layoutY="96.0" prefHeight="632.0" prefWidth="288.0">
          <children>
             <Label layoutX="99.0" layoutY="6.0" text="Selected Country" />
-            <Button fx:id="btnReinforcement" layoutX="93.0" layoutY="274.0" mnemonicParsing="false" onAction="#reinforce" text="Reinforcements" />
+            <Button fx:id="btnReinforcement" layoutX="27.0" layoutY="274.0" mnemonicParsing="false" onAction="#reinforce" text="Reinforcements" />
             <Label layoutX="76.0" layoutY="310.0" text="Neighbouring Country" />
-            <Button fx:id="btnFortify" layoutX="101.0" layoutY="540.0" mnemonicParsing="false" onAction="#fortify" prefHeight="27.0" prefWidth="87.0" text="Fortify" />
-            <Button fx:id="btnEndTurn" layoutX="110.0" layoutY="581.0" mnemonicParsing="false" onAction="#endTrun" text="End Turn" visible="false" />
+            <Button fx:id="btnFortify" layoutX="174.0" layoutY="543.0" mnemonicParsing="false" onAction="#fortify" prefHeight="27.0" prefWidth="87.0" text="Fortify" />
+            <Button fx:id="btnEndTurn" layoutX="35.0" layoutY="544.0" mnemonicParsing="false" onAction="#endTrun" text="End Turn" />
             <ListView fx:id="counList" layoutX="15.0" layoutY="33.0" prefHeight="234.0" prefWidth="252.0" />
             <ListView fx:id="adjCounList" layoutX="22.0" layoutY="333.0" prefHeight="200.0" prefWidth="245.0" />
+            <Button fx:id="btnNoAttack" layoutX="87.0" layoutY="584.0" mnemonicParsing="false" onAction="#noAttack" prefHeight="25.0" prefWidth="99.0" text="No Attack" />
+            <Button fx:id="btnCards" layoutX="179.0" layoutY="274.0" mnemonicParsing="false" onAction="#openCardPane" prefHeight="25.0" prefWidth="69.0" text="Cards" />
          </children>
       </AnchorPane>
       <AnchorPane layoutX="18.0" layoutY="76.0" prefHeight="549.0" prefWidth="318.0">
          <children>
-            <TextArea fx:id="txtAreaMsg" layoutX="10.0" layoutY="188.0" prefHeight="333.0" prefWidth="299.0" />
-            <Label layoutX="133.0" layoutY="162.0" text="Message" />
-            <BarChart fx:id="armyDominationChart" animated="false" layoutX="20.0" layoutY="14.0" prefHeight="135.0" prefWidth="274.0">
+            <TextArea fx:id="txtAreaMsg" layoutY="289.0" prefHeight="333.0" prefWidth="299.0" />
+            <Label layoutX="126.0" layoutY="258.0" text="Message" />
+            <BarChart fx:id="armyDominationChart" animated="false" layoutX="13.0" layoutY="125.0" prefHeight="135.0" prefWidth="274.0">
               <xAxis>
                 <CategoryAxis side="BOTTOM" />
               </xAxis>
@@ -34,6 +36,7 @@
                 <NumberAxis side="LEFT" />
               </yAxis>
             </BarChart>
+            <PieChart fx:id="worldDominationPieChart" layoutX="22.0" layoutY="-17.0" prefHeight="132.0" prefWidth="274.0" />
          </children>
       </AnchorPane>
       <Label fx:id="lblCurrPlayer" layoutX="258.0" layoutY="16.0" prefHeight="25.0" prefWidth="245.0" text="Turn of Player:" />
