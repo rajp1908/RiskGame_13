@@ -15,6 +15,8 @@ import com.risk6441.entity.Map;
 import com.risk6441.entity.Player;
 import com.risk6441.entity.Country;
 import com.risk6441.exception.InvalidGameAction;
+import com.risk6441.exception.InvalidGameAction;
+import com.risk6441.entity.Country;
 import com.risk6441.gameutilities.GameUtilities;
 import com.risk6441.maputilities.CommonMapUtilities;
 import com.risk6441.strategy.Human;
@@ -28,20 +30,21 @@ import javafx.scene.control.TextArea;
 /**
  * @author Dolly
  * @author Hardik
- * @author Jemish
  */
-@SuppressWarnings("restriction")
 public class PlayerModel extends Observable implements Observer, Serializable {
 
 	/**
 	 * The serial ID
 	 */
 	private static final long serialVersionUID = 6224554451688312772L;
+	
+	private static int[] numberOfArmiesList = {Configuration.ARMIES_TWO_PLAYER, Configuration.ARMIES_THREE_PLAYER,
+			Configuration.ARMIES_FOUR_PLAYER,Configuration.ARMIES_FIVE_PLAYER,Configuration.ARMIES_SIX_PLAYER	};
 
 	private List<Player> playerList;
 
 	/**
-	 * Returns the playerlist
+	 * Returns the list of players
 	 * @return the playerList
 	 */
 	public List<Player> getPlayerList() {
@@ -49,7 +52,7 @@ public class PlayerModel extends Observable implements Observer, Serializable {
 	}
 
 	/**
-	 * Sets the playerlist.
+	 * Sets the list of players.
 	 * @param playerList the playerList to set
 	 */
 	public void setPlayerList(List<Player> playerList) {
@@ -82,7 +85,7 @@ public class PlayerModel extends Observable implements Observer, Serializable {
 	/**
 	 * the @countryWon
 	 */
-	private int numberOfCountryWon;
+	private int NumberOfcountryWon;
 
 	/**
 	 * This method allocates armies to players and display log in TextArea.
@@ -96,27 +99,30 @@ public class PlayerModel extends Observable implements Observer, Serializable {
 		int playerArmy = 0;
 		int number_of_players = ply.size();
 
-		switch (number_of_players) {
-		case 2:
-			playerArmy = Configuration.ARMIES_TWO_PLAYER;
-			break;
+		//refactoring method Substitute Algorithm applied
+		playerArmy = numberOfArmiesList[number_of_players - 2];
 
-		case 3:
-			playerArmy = Configuration.ARMIES_THREE_PLAYER;
-			break;
-
-		case 4:
-			playerArmy = Configuration.ARMIES_FOUR_PLAYER;
-			break;
-
-		case 5:
-			playerArmy = Configuration.ARMIES_FIVE_PLAYER;
-			break;
-
-		case 6:
-			playerArmy = Configuration.ARMIES_SIX_PLAYER;
-			break;
-		}
+//		switch (number_of_players) {
+//		case 2:
+//			playerArmy = Configuration.ARMIES_TWO_PLAYER;
+//			break;
+//
+//		case 3:
+//			playerArmy = Configuration.ARMIES_THREE_PLAYER;
+//			break;
+//
+//		case 4:
+//			playerArmy = Configuration.ARMIES_FOUR_PLAYER;
+//			break;
+//
+//		case 5:
+//			playerArmy = Configuration.ARMIES_FIVE_PLAYER;
+//			break;
+//
+//		case 6:
+//			playerArmy = Configuration.ARMIES_SIX_PLAYER;
+//			break;
+//		}
 
 		for (Player player : ply) {
 			player.setArmies(playerArmy);
@@ -159,7 +165,7 @@ public class PlayerModel extends Observable implements Observer, Serializable {
 		if (countryCount < 9) {
 			currentArmies = currentArmies + 3;
 		} else {
-			currentArmies += (countryCount / 3);
+			currentArmies += Math.floor(countryCount / 3);
 		}
 
 		List<Continent> continents = getPlayersContinents(map, currentPlayer);
@@ -241,13 +247,15 @@ public class PlayerModel extends Observable implements Observer, Serializable {
 			return;
 		
 		
-		if(currentPlayer.getStrategy() instanceof Human) {
+		if(currentPlayer.getStrategy() instanceof Human ) {
 			if(playerList.size()==1) {
 				setChanged();
 				notifyObservers("disableGameControls");
 				return;
 			}
-			currentPlayer.getStrategy().attackPhase(countList, adjCountList, this, playerList, conArList, adjConArList);
+			currentPlayer.getStrategy().attackPhase(countList, adjCountList, this,playerList, conArList,adjConArList);
+
+			
 				
 		}else {
 			Thread backgroundThread = new Thread(new Runnable() {
@@ -271,6 +279,8 @@ public class PlayerModel extends Observable implements Observer, Serializable {
 					} catch (InvalidGameAction e) {
 						e.printStackTrace();
 					}
+
+					
 				}
 			});
 			backgroundThread.setDaemon(true);
@@ -455,6 +465,8 @@ public class PlayerModel extends Observable implements Observer, Serializable {
 				country.setArmy(country.getArmy() + 1);
 				currentPlayer.setArmies(playerArmies - 1);
 			}
+		} else {
+			assignArmiesTocountry(txtAreaMsg);
 		}
 		countryList.refresh();
 
@@ -481,7 +493,7 @@ public class PlayerModel extends Observable implements Observer, Serializable {
 		String str = (String) arg;
 		if (str.equals("rollDiceComplete")) {
 			DiceModel diceModel = (DiceModel) o;
-			System.out.println(getNumOfCountryWon()+"won");
+			System.out.println(getNumOfCountryWon()+"Dekho won");
 			setNumOfCountryWon(diceModel.getNumberOfCountryWon()+getNumOfCountryWon());
 			Platform.runLater(() -> {
 				setChanged();
@@ -510,36 +522,36 @@ public class PlayerModel extends Observable implements Observer, Serializable {
 	/**
 	 * This methods returns the number of country won by the player in a turn.
 	 * 
-	 * @return NumOfcountryWon Number of Country won by player in a turn
+	 * @return NumOfcountryWon Number of country won by player in a turn
 	 */
 	public int getNumOfCountryWon() {
-		return numberOfCountryWon;
+		return NumberOfcountryWon;
 	}
 
 	/**
 	 * This method sets the number of country won by the player.
 	 * 
-	 * @param countryWon the countryWon to set
+	 * @param countryWon the country Won to set
 	 */
 	public void setNumOfCountryWon(int countryWon) {
-		this.numberOfCountryWon = countryWon;
+		this.NumberOfcountryWon = countryWon;
 	}
 
 
-//	/**
-//	 * This method assign armies to player's countries randmomly for COMPUTER strategy 
-//	 * 
-//	 * @param txtAreaMsg The area where the message is to be displayed.
-//	 */
-//	private void assignArmiesTocountry(TextArea txtAreaMsg) {
-//		if (currentPlayer.getArmies() > 0) {
-//			Country con = currentPlayer.getAssignedCountry()
-//					.get(CommonMapUtilities.getRandomNumber(currentPlayer.getAssignedCountry().size() - 1));
-//			GameUtilities.addLogFromText(currentPlayer.getName() + " - Assigned Armies to " + con.getName() + "\n");
-//			con.setArmy(con.getArmy() + 1);
-//			currentPlayer.setArmies(currentPlayer.getArmies() - 1);
-//		}
-//	}
+	/**
+	 * This method assign armies to player's countries randmomly for COMPUTER strategy 
+	 * 
+	 * @param txtAreaMsg The area where the message is to be displayed.
+	 */
+	private void assignArmiesTocountry(TextArea txtAreaMsg) {
+		if (currentPlayer.getArmies() > 0) {
+			Country con = currentPlayer.getAssignedCountry()
+					.get(CommonMapUtilities.getRandomNumber(currentPlayer.getAssignedCountry().size() - 1));
+			GameUtilities.addLogFromText(currentPlayer.getName() + " - Assigned Armies to " + con.getName() + "\n");
+			con.setArmy(con.getArmy() + 1);
+			currentPlayer.setArmies(currentPlayer.getArmies() - 1);
+		}
+	}
 
 	/**
 	 * This method checks if players armies is exhausted.
@@ -590,12 +602,13 @@ public class PlayerModel extends Observable implements Observer, Serializable {
 	
 	/**
 	 * This method is used to exchange cards for army.
-	 * 
+	 * and also refactored by removing unused parameter textAreaMsg
 	 * @param selectedCardsByThePlayer List of cards selected by the current player.
 	 * @param txtAreaMsg               The area where the message has to be
 	 *                                 displayed.
+	 *                                 
 	 */
-	public void tradeCardsAndGetArmy(List<Card> selectedCardsByThePlayer, TextArea txtAreaMsg) {
+	public void tradeCardsAndGetArmy(List<Card> selectedCardsByThePlayer) {
 		currentPlayer.setArmies(currentPlayer.getArmies() + (5 * currentPlayer.getNumeberOfTimeCardsExchanged()));
 		GameUtilities.addLogFromText(currentPlayer.getName() + " exchanged 3 cards for the army "
 				+ (5 * currentPlayer.getNumeberOfTimeCardsExchanged() + "\n"));
