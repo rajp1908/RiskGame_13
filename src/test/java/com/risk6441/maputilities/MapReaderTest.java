@@ -96,6 +96,7 @@ public class MapReaderTest {
 		mapReader.readMapFile(file);
 	}
 	
+	
 	/**
 	 * This method tests the map in which Country has no continents.
 	 * @throws InvalidMap InvalidMapException

@@ -24,6 +24,7 @@ import com.risk6441.exception.InvalidMap;
 import com.risk6441.maputilities.MapReader;
 import com.risk6441.maputilities.MapVerifier;
 
+
 /**
  * This is the test class for MapVerifier. {@link MapVerifier}
  * @author Raj
@@ -175,6 +176,7 @@ public class MapVerifierTest {
 		Map map1 = new MapReader().readMapFile(file);
 	}
 	
+	
 	/**
 	 * This method checks if the program can load world map.
 	 * @throws InvalidMap Throws invalid map exception.
@@ -186,6 +188,7 @@ public class MapVerifierTest {
 		Map map = new MapReader().readMapFile(file);
 		assertNotNull(map);
 	}
+	
 	
 	/**
 	 * This method checks if the program can load unconnected continent map.

@@ -11,7 +11,6 @@ import org.junit.runners.Suite.SuiteClasses;
 @RunWith(Suite.class)
 @SuiteClasses({MapReaderTest.class, MapOperationsTest.class, MapVerifierTest.class})
 public class MapUtilitiesTestSuite {
-	
 }
 
 

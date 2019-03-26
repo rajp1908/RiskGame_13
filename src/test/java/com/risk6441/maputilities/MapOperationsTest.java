@@ -37,7 +37,6 @@ public class MapOperationsTest {
 	int x2=2;
 	int y2=2;
 	
-	
 	static HashMap<String,String> mapData;
 	
 	String mapAuthor = "Robert";
