@@ -38,6 +38,19 @@ import javafx.scene.control.TextArea;
 import javafx.scene.layout.AnchorPane;
 import javafx.stage.Stage;
 
+/**
+ * This class controls the action of tournament
+ * <ul>
+ * <li>  no of player in Tournament  </li>
+ * <li>  get no of players </li>
+ * <li>  action map </li>
+ * <li>  create players </li>
+ * <li>  etc... </li>
+ * </ul>
+ * @author Deep
+ */
+
+
 public class TournamentController implements Initializable, Observer {
 
 	private int numeberOfGames;
