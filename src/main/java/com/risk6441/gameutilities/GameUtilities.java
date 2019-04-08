@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Random;
 import java.util.Stack;
 
+import com.risk6441.configuration.PlayerStrategy;
 import com.risk6441.configuration.CardKind;
 import com.risk6441.entity.Card;
 import com.risk6441.entity.Continent;
@@ -16,12 +17,14 @@ import com.risk6441.exception.InvalidMap;
 import javafx.application.Platform;
 import javafx.scene.control.Button;
 import javafx.scene.control.CheckBox;
+import javafx.scene.control.ComboBox;
 import javafx.scene.control.TextArea;
 import javafx.scene.layout.Pane;
 import javafx.stage.Stage;
 
 /**
  * @author Raj
+ * @author Jemish
  *
  */
 public class GameUtilities {
@@ -43,12 +46,12 @@ public class GameUtilities {
 	 * @param string String that is to be written in textArea.
 	 */
 	public static void addLogFromText(String string) {
-//		try {
+		try {
 			
 		if(!isTestMode)
 			Platform.runLater(() -> txtMsgArea.appendText(string));	
-//		}
-//		catch(Exception e) {}
+		}
+		catch(Exception e) {}
 	}
 	
 	/**
@@ -260,5 +263,37 @@ public class GameUtilities {
 			}
 		}		
 	}
-
+	
+	
+	/**
+	 * This method loads the values in combobox for number of turns
+	 * @param noOFTurns  no of turns for tournament
+	 */
+	public static void loadTurnsInTournament(ComboBox<Integer> noOFTurns) {
+		noOFTurns.getItems().removeAll(noOFTurns.getItems());
+		for(int i=5; i<=50; i++) {
+			noOFTurns.getItems().add(i);
+		}
+	}
+	
+	/**
+	 * This method loads the values of number of games in tournament
+	 * @param numberOfGamesComboBox no of games for tournament
+	 */
+	public static void loadGamesInTournament(ComboBox<Integer> numberOfGamesComboBox) {
+		numberOfGamesComboBox.getItems().removeAll(numberOfGamesComboBox.getItems());
+		numberOfGamesComboBox.getItems().addAll(1, 2, 3, 4, 5);
+	}
+	
+	/**
+	 * This method loads the values of player strategy in combobox
+	 * @param playerComboBox player Combobox
+	 */
+	public static void loadPlayersInTournament(ComboBox<String> playerComboBox) {
+		playerComboBox.getItems().removeAll(playerComboBox.getItems());
+		playerComboBox.getItems().addAll(PlayerStrategy.AGGRESSIVE.toString(), PlayerStrategy.BENEVOLENT.toString(),
+				PlayerStrategy.CHEATER.toString(), PlayerStrategy.RANDOM.toString());
+	}
 }
+
+
