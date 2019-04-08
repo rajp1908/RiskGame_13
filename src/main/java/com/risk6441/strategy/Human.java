@@ -26,9 +26,8 @@ import javafx.stage.Stage;
  * @author Dolly
  *
  */
-public class Human implements IStrategy {/**
-	 * 
-	 */
+public class Human implements IStrategy {
+	
 	private static final long serialVersionUID = 1L;
 
 	/*

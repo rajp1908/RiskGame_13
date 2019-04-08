@@ -8,8 +8,6 @@ import java.util.stream.Collectors;
 import com.risk6441.entity.Country;
 import com.risk6441.entity.Map;
 import com.risk6441.entity.Player;
-import com.risk6441.entity.Country;
-import com.risk6441.exception.InvalidGameAction;
 import com.risk6441.exception.InvalidGameAction;
 import com.risk6441.gameutilities.GameUtilities;
 import com.risk6441.models.PlayerModel;
@@ -19,6 +17,7 @@ import javafx.scene.control.ListView;
 /**
  * 
  * @author Deep
+ * @author Jemish
  *
  */
 public interface IStrategy extends Serializable{
@@ -96,7 +95,7 @@ public interface IStrategy extends Serializable{
 		}
 		if (!isValidAttackMove) {
 			GameUtilities.addLogFromText("No valid attack move avialble move to Fortification phase.\n");
-			GameUtilities.addLogFromText("===Attack phase ended! === \n");
+			GameUtilities.addLogFromText("******Attack phase ended! ******** \n");
 			return isValidAttackMove;
 		}
 		return isValidAttackMove;
