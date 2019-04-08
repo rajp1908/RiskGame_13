@@ -25,10 +25,13 @@ import com.risk6441.entity.Continent;
 import com.risk6441.entity.Country;
 import com.risk6441.entity.Map;
 import com.risk6441.entity.Player;
+
 import com.risk6441.exception.InvalidGameAction;
 import com.risk6441.exception.InvalidMap;
 import com.risk6441.gameutilities.GameUtilities;
+
 import com.risk6441.maputilities.CommonMapUtilities;
+
 import com.risk6441.models.CardModel;
 import com.risk6441.models.GameUIStateModel;
 import com.risk6441.models.PlayerModel;
@@ -146,6 +149,11 @@ public class PlayGameController extends Observable implements Initializable, Obs
     @FXML
     private Label lblCurrPlayer;
     
+    @FXML
+	private Button btnSaveGame;
+    
+    private boolean isGameSaved = false;
+    
     private String txtMsgAreaTxt;
 
 	private String phaseOfTheGame;
@@ -211,6 +219,37 @@ public class PlayGameController extends Observable implements Initializable, Obs
 	@FXML
 	void fortify(ActionEvent event) {
 		fortifyArmy();
+	}
+	
+	/**
+	 * This method saves the state of the game.
+	 * 
+	 * @param event Event for JavaFX
+	 */
+	@FXML
+	void saveGame(ActionEvent event) {
+		File file = CommonMapUtilities.saveFileDialogForGame();
+		saveGame(file);
+	}
+	
+	/**
+	 * This method writes the game data for saving the game to given path of the
+	 * file.
+	 * 
+	 * @param file file path for writing it
+	 */
+	public void saveGame(File file) {
+		try {
+			FileOutputStream fileOutputStream = new FileOutputStream(file);
+			ObjectOutputStream objectOutputStream = new ObjectOutputStream(fileOutputStream);
+			objectOutputStream.writeObject(this);
+			objectOutputStream.close();
+			fileOutputStream.close();
+			System.out.printf("Game Saved at : " + file.getPath());
+			CommonMapUtilities.alertBox("Game Saved", "Game Saved at : " + file.getPath(), "Info");
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 	}
 
 	/**
@@ -295,13 +334,13 @@ public class PlayGameController extends Observable implements Initializable, Obs
 	 */
 	@FXML
 	void noAttack(ActionEvent event) {
-		System.out.println("Inside pgc noMoreAttack");
+		
 		refreshList();
 		if (playerList.size() <= 1) {
 			disableGameControls();
 			return;
 		}
-		GameUtilities.addLogFromText("**** Attack phase ended! ****\n");
+		GameUtilities.addLogFromText("******** Attack phase ended! *****\n");
 		if (playerModel.getNumOfCountryWon() > 0) {
 			allocateCardToPlayer();
 		}
@@ -389,7 +428,9 @@ public class PlayGameController extends Observable implements Initializable, Obs
 			playerListIterator = playerList.iterator();
 		}
 		currentPlayer = playerListIterator.next();
-		
+		if(!(currentPlayer.getStrategy() instanceof Human)) {
+			CommonMapUtilities.enableOrDisableSave(false);
+		}
 		cardModel.setCurrentPlayer(currentPlayer);
 		playerModel.setPlayerList(playerList);
 		playerModel.setCurrentPlayer(currentPlayer);
@@ -447,14 +488,16 @@ public class PlayGameController extends Observable implements Initializable, Obs
 	 * java.util.ResourceBundle)
 	 */
 	public void initialize(URL location, ResourceBundle resources) {
-	
+		Configuration.isThreadingForTournament = true;
 		Configuration.waitBeweenTurn = 3000;
 		choiceBoxNoOfPlayer.getItems().addAll(2, 3, 4, 5, 6);
 		Configuration.isAllComputerPlayer = true;
+		Configuration.isTournamentMode = false;
 		lblGamePhase.setText("Phase =>  Start  !");
 		updateMap();
 		allocateCardTOCountries();
 		CommonMapUtilities.disableControls(btnNoAttack, btnCards);
+		CommonMapUtilities.btnSave = btnSaveGame;
 		GameUtilities.txtMsgArea = txtAreaMsg;
 		listenerForNumberOfPlayer();
 		
@@ -488,12 +531,14 @@ public class PlayGameController extends Observable implements Initializable, Obs
 		counList.setOnMouseClicked(new EventHandler<MouseEvent>() {
 			@Override
 			public void handle(MouseEvent event) {
-				System.out.println("event invoked");
+				
 				Country coun = counList.getSelectionModel().getSelectedItem();
 				showAdjCountryOfCounInList(coun);
 			}
 		});
-
+		if (isGameSaved) {
+			loadMapDataAfterLoadingSavedGame();
+		}
 		
 	}
 
@@ -536,7 +581,57 @@ public class PlayGameController extends Observable implements Initializable, Obs
 		stage.show();
 	}
 
-	
+	/**
+	 * This method loads the game panel after loading the saved game.
+	 */
+	private void loadMapDataAfterLoadingSavedGame() {
+		CommonMapUtilities.disableControls(choiceBoxNoOfPlayer);
+		lblCurrPlayer.setText(lblPlayerString);
+		lblGamePhase.setText(phaseOfTheGame);
+		GameUtilities.addLogFromText(txtMsgAreaTxt);
+		showWorldDominationData();
+		showMilitaryDominationData();
+
+		counList.getItems().addAll(FXCollections.observableArrayList(currentPlayer.getAssignedCountry()));
+		
+		if (state.isPlaceArmyEnable)
+			CommonMapUtilities.enableControls(btnPlaceArmy);
+		
+		if (state.choiceBoxNoOfPlayer)
+			CommonMapUtilities.enableControls(choiceBoxNoOfPlayer);
+
+		if (state.isReinforcemetnEnable)
+			CommonMapUtilities.enableControls(btnReinforcement);
+
+		if (state.isCardsEnable)
+			CommonMapUtilities.enableControls(btnCards);
+
+		if (state.isNoMoreAttackEnable)
+			CommonMapUtilities.enableControls(btnNoAttack);
+
+		if (state.isFortificationEnable)
+			CommonMapUtilities.enableControls(btnFortify);
+
+		if (state.isEndTurnEnable)
+			CommonMapUtilities.enableControls(btnEndTurn);
+
+		playerListIterator = playerList.iterator();
+		System.out.println(playerList);
+
+		playerListIterator = playerList.iterator();
+
+		adjCounList.setOnMouseClicked(e -> attack());
+		
+		int count = 0;
+		System.out.println(count);
+		System.out.println(stackOfCards.size());
+		while (playerListIterator.hasNext()) {
+			if (playerListIterator.next().equals(currentPlayer)) {
+				System.out.println(count);
+				break;
+			}
+		}
+	}
 
 	/**
 	 * Show adjacent countries of the particular country
@@ -544,10 +639,9 @@ public class PlayGameController extends Observable implements Initializable, Obs
 	 * @param coun country object
 	 */
 	public void showAdjCountryOfCounInList(Country coun) {
-		System.out.println("showAdjCountryOfCounInList");
-		System.out.println(lblGamePhase.getText());
+		
 		if (lblGamePhase.getText().contains("Fortification")) {
-			System.out.println("Rendering ");
+			
 			List<Country> reachableCounList = new ArrayList<Country>();
 			List<Country> allCoun = GameUtilities.getCountryList(map);
 
@@ -556,9 +650,7 @@ public class PlayGameController extends Observable implements Initializable, Obs
 			for (Country t : allCoun) {
 				t.setProcessed(false);
 			}
-			for(Country c : reachableCounList) {
-				System.out.println("reachable : "+c.getName());
-			}
+			
 			adjCounList.getItems().clear();
 			adjCounList.getItems().addAll(reachableCounList);
 
@@ -611,7 +703,7 @@ public class PlayGameController extends Observable implements Initializable, Obs
 	public void initializeAttack() {
 		GameUtilities.addLogFromText("===============================\n");
 		GameUtilities.addLogFromText("The Attack phase has begun.\n");
-//		CommonMapUtilities.enableOrDisableSave(true);
+		CommonMapUtilities.enableOrDisableSave(true);
 		ArrayList<Country> counArList = new ArrayList<>(counList.getItems());
 		refreshList();
 		
@@ -643,7 +735,7 @@ public class PlayGameController extends Observable implements Initializable, Obs
 		
 		GameUtilities.addLogFromText("\n***************************************************************\n");
 		GameUtilities.addLogFromText("               Fortification phase Begins  \n\n");
-//		CommonMapUtilities.enableOrDisableSave(true);
+		CommonMapUtilities.enableOrDisableSave(true);
 		btnFortify.setDisable(false);
 		CommonMapUtilities.disableControls(btnNoAttack);
 		btnFortify.requestFocus();
@@ -686,8 +778,10 @@ public class PlayGameController extends Observable implements Initializable, Obs
 	private void initializeReinforcement(boolean loadPlayerFromStart) {
 		System.out.println("Inside intialize reinforcement " + loadPlayerFromStart);
 		refreshList();
-		
-//		CommonMapUtilities.enableOrDisableSave(true);
+		if(Configuration.isTournamentMode) {
+			numOfTurnDone++;
+		}
+		CommonMapUtilities.enableOrDisableSave(true);
 		CommonMapUtilities.enableControls(btnCards);
 		loadCurrentPlayer(loadPlayerFromStart);
 		CommonMapUtilities.disableControls(btnPlaceArmy, btnFortify, btnEndTurn, btnNoAttack);
@@ -699,7 +793,10 @@ public class PlayGameController extends Observable implements Initializable, Obs
 		countReinforcementArmies();
 		if ((currentPlayer.getStrategy() instanceof Human)) {
 			cardModel.openCardWindow(false);
-		} 
+		} else {
+			cardModel.openCardWindowForOther(false);
+			reinforceArmy(null);
+		}
 
 	}
 
@@ -726,9 +823,14 @@ public class PlayGameController extends Observable implements Initializable, Obs
 		Player playerLost = playerModel.checkAnyPlayerLostTheGame(playerList);
 		if (playerLost != null) {
 			
-			playerList.remove(playerLost);
-			this.playerLost = playerLost;
+			if(Configuration.isTournamentMode) {
+				int executedTurnCount = numOfTurnDone / playerList.size();
+				int remainingTurn = maxNumOfTurn - executedTurnCount;
+				maxNumOfEachPlayerTurn = remainingTurn * (playerList.size()-1);
+			}
 			
+			playerList.remove(playerLost);
+			this.playerLost = playerLost;			
 			
 			playerModel.setPlayerList(playerList);
 
@@ -754,7 +856,7 @@ public class PlayGameController extends Observable implements Initializable, Obs
 			// check if player has more than 6 cards now, open card window, and allow to
 			// trade cards till he has cards less than 5
 			System.out.println("Inside open card window " + currentPlayer.getCardList().size());
-			if (currentPlayer.getCardList().size() > 5 && playerList.size() > 1) {
+			if (currentPlayer.getCardList().size() >= 5 && playerList.size() > 1) {
 				if (currentPlayer.getStrategy() instanceof Human) {
 					cardModel.openCardWindow(true);
 				} else {
@@ -854,7 +956,6 @@ public class PlayGameController extends Observable implements Initializable, Obs
 			refreshList();
 			disableGameControls();
 			setChanged();
-			System.out.println("There");
 			notifyObservers("gameOver"+gameNo);
 			oneTime = false;
 		}
@@ -868,14 +969,18 @@ public class PlayGameController extends Observable implements Initializable, Obs
 	private void disableGameControls() {
 		
 		CommonMapUtilities.disableControls(counList, adjCounList, btnReinforcement, btnFortify, btnNoAttack, btnCards,
-				btnEndTurn);//btnNoMoreAttack
+				btnEndTurn, btnSaveGame);
 		btnNoAttack.setDisable(true);
 		lblGamePhase.setText("GAME OVER");
 		setCurrentPlayerLabel(playerList.get(0).getName().toUpperCase() + " WON THE GAME");
 		updateMap();
 		setLabelAndShowWorldDomination();
 		GameUtilities.addLogFromText("********************************************************************************\n");
-		GameUtilities.addLogFromText(playerList.get(0).getName().toUpperCase() + " WON THE GAME \n");
+		if(Configuration.isTournamentMode) {
+			GameUtilities.addLogFromText(gameNo+" - "+playerList.get(0).getName().toUpperCase() + " WON THE GAME\n");
+		} else {
+			GameUtilities.addLogFromText(playerList.get(0).getName().toUpperCase() + " WON THE GAME \n");
+		}
 		GameUtilities.addLogFromText("*******************************************************************************\n");
 		
 	}
@@ -888,6 +993,18 @@ public class PlayGameController extends Observable implements Initializable, Obs
 	@Override
 	public void update(Observable o, Object arg) {
 		
+		if((Configuration.isTournamentMode && (numOfTurnDone > maxNumOfEachPlayerTurn)) || playerList.size()<=1) {
+			//return to that tournament
+			if(oneTime) {
+				if(playerList.size()<=1) {
+					disableGameControls();
+				}
+				setChanged();
+				notifyObservers("gameOver"+gameNo);
+			}
+			oneTime  = false;
+			return;
+		}
 		
 		String str = (String) arg;
 		
@@ -922,7 +1039,6 @@ public class PlayGameController extends Observable implements Initializable, Obs
 			tradeCards();
 		} else if (str.equals("opencardWindowForCardExchangeTillLessThan5")) {
 			cardModel.openCardWindow(true);
-			System.out.println("Inside 5 more cards");
 		} else if (str.equals("checkForValidFortificaion")) {
 			refreshList();
 			isValidFortificationPhase();
@@ -937,6 +1053,12 @@ public class PlayGameController extends Observable implements Initializable, Obs
 		} else if (str.equals("skipAndGoToFortify")) {
 			refreshView();
 			noAttack(null);
+		} else if (str.equals("oneAttackDoneForCheater")) {
+			refreshList();
+			checkIfAnyPlayerLostTheMatch();
+			if(!isGameOver) {
+				checkIfPlayerWonTheGame();
+			}
 		} else if (str.equals("disableGameControls")) {
 			disableGameControls();
 		}else if(str.equals("updateReinforceArmy")) {
@@ -983,7 +1105,7 @@ public class PlayGameController extends Observable implements Initializable, Obs
 		boolean isAllComputerPlayes = checkIfAllComputerPlayer();
 		Configuration.isAllComputerPlayer = isAllComputerPlayes;
 		if(isAllComputerPlayes) {
-	//		btnSaveGame.setDisable(true);
+			btnSaveGame.setDisable(true);
 		}
 				
 		try {
@@ -1113,7 +1235,7 @@ public class PlayGameController extends Observable implements Initializable, Obs
 	 */
 	@Override
 	public void readExternal(ObjectInput in) throws IOException, ClassNotFoundException {
-	//	isGameSaved = true;
+		isGameSaved = true;
 
 		map = (Map) in.readObject();
 		currentPlayer = (Player) in.readObject();
@@ -1136,7 +1258,59 @@ public class PlayGameController extends Observable implements Initializable, Obs
 		
 	}
 	
-
+	/**
+	 * This method loads controller for tournament.
+	 * @param playerList The playerlist.
+	 * @param numberOfTurn Number of turns before draw.
+	 * @param gameNo The current game number.
+	 * @param console The textarea where the results are displayed.
+	 */
+	public void loadControllerForTournament(List<Player> playerList, int numberOfTurn, int gameNo,TextArea console) {
+		this.maxNumOfTurn = numberOfTurn;
+		this.numOfTurnDone = 0;
+		this.maxNumOfEachPlayerTurn = maxNumOfTurn * playerList.size();
+		this.gameNo = gameNo;
+		btnReinforcement = new Button();
+		lblCurrPlayer = new Label();
+		lblGamePhase = new Label("Start Up");
+		btnPlaceArmy = new Button();
+		worldDominationPieChart = new PieChart();
+		CategoryAxis xAxis    = new CategoryAxis();
+		NumberAxis yAxis = new NumberAxis();
+		armyDominationChart = new BarChart(xAxis, yAxis);
+		btnFortify = new Button();
+		btnNoAttack = new Button();
+		btnCards = new Button();
+		btnEndTurn = new Button();
+		counList = new ListView<Country>();
+		adjCounList = new ListView<Country>();
+		txtAreaMsg = new TextArea();
+		vbox = new VBox();
+		choiceBoxNoOfPlayer = new ChoiceBox<>();
+		btnSaveGame = new Button();
+		allocateCardTOCountries();
+		
+		Configuration.isThreadingForTournament = true;
+		Configuration.isTournamentMode = true;
+		Configuration.isPopUpShownInAutoMode = false;
+		Configuration.waitBeweenTurn = 700;
+		
+		GameUtilities.txtMsgArea = console;
+		
+		CommonMapUtilities.btnSave  = btnSaveGame;
+		
+		//clone the list set player and territories
+		for(Player p : playerList) {
+			Player p2 = new Player(p.getId(), p.getName());
+			p2.setStrategy(p.getStrategy());
+			p2.setPlayerStrategy(p.getPlayerStrategy());
+			this.playerList.add(p2);
+		}
+		
+		//start game after this
+		allocateArmyAndCoun();
+		
+	}
 	
 	/**
 	 * This method loads the controller for testing.
@@ -1144,6 +1318,7 @@ public class PlayGameController extends Observable implements Initializable, Obs
 	 * @param console The area where the results are to be displayed.
 	 */
 	public void loadControllerForTest(List<Player> playerList, TextArea console) {
+		
 		this.numOfTurnDone = 0;
 		this.maxNumOfEachPlayerTurn = maxNumOfTurn * playerList.size();
 		btnReinforcement = new Button();
@@ -1163,15 +1338,18 @@ public class PlayGameController extends Observable implements Initializable, Obs
 		txtAreaMsg = new TextArea();
 		vbox = new VBox();
 		choiceBoxNoOfPlayer = new ChoiceBox<>();
+		btnSaveGame = new Button();
 		allocateCardTOCountries();
 		
 		
+		Configuration.isThreadingForTournament = false;
+		Configuration.isTournamentMode = true;
 		Configuration.waitBeweenTurn = 1000;
 		Configuration.isPopUpShownInAutoMode = false;
 		
 		GameUtilities.txtMsgArea = console;
 		
-//		CommonMapUtilities.btnSave  = btnSaveGame;
+		CommonMapUtilities.btnSave  = btnSaveGame;
 		
 	}
 
