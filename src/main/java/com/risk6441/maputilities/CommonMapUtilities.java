@@ -61,6 +61,20 @@ public class CommonMapUtilities {
 		return file;
 	}
 	
+	
+	/**
+	 * This method opens a dialog box to choose a map file.
+	 * @return file of type object {@link File}
+	 */
+	public static File showFileDialogForLoadingGame() {
+		FileChooser fileChooser = new FileChooser();
+		File file = null;
+		FileChooser.ExtensionFilter extFilter = new FileChooser.ExtensionFilter("Map files (*.game)", "*.game");
+		fileChooser.getExtensionFilters().add(extFilter);
+		file = fileChooser.showOpenDialog(null);
+		return file;
+	}
+	
 	/**
 	 * This method is used to save map files.
 	 * @return file of type {@link File}
@@ -73,6 +87,22 @@ public class CommonMapUtilities {
 		file = fileChooser.showSaveDialog(null);
 		return file;
 	}
+	
+	
+	/**
+	 * This method is used for saving the game.
+	 * @return file of type object
+	 */
+	public static File saveFileDialogForGame() {
+		FileChooser fileChooser = new FileChooser();
+		File file = null;
+		FileChooser.ExtensionFilter extensionFilter = new FileChooser.ExtensionFilter("Map files (*.game)", "*.game");
+		fileChooser.getExtensionFilters().add(extensionFilter);
+		fileChooser.setInitialFileName("savedGame");
+		file = fileChooser.showSaveDialog(null);
+		return file;
+	}
+	
 	
 	/**
 	 * This method generates random number from 0 to number.
@@ -202,8 +232,8 @@ public class CommonMapUtilities {
 	/**
 	 * @param bool true for enabling the button; false for disabling button
 	 */
-//	public static void enableOrDisableSave(boolean bool) {
-//		if(!Configuration.isAllComputerPlayer)
-//			btnSave.setDisable(!bool);
-//	}
+	public static void enableOrDisableSave(boolean bool) {
+		if(!Configuration.isAllComputerPlayer)
+			btnSave.setDisable(!bool);
+	}
 }

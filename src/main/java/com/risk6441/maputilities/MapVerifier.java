@@ -15,6 +15,7 @@ import com.risk6441.exception.InvalidMap;
 /**
  * This class validates the map. 
  * @author Hardik
+ * @author Jemish
  *
  */
 public class MapVerifier {
