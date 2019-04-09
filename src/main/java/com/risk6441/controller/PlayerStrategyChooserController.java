@@ -7,8 +7,12 @@ import java.util.ResourceBundle;
 import com.risk6441.configuration.PlayerStrategy;
 import com.risk6441.entity.Player;
 import com.risk6441.gameutilities.GameUtilities;
+import com.risk6441.strategy.Aggressive;
+import com.risk6441.strategy.Benevolent;
+import com.risk6441.strategy.Cheater;
 import com.risk6441.strategy.Human;
 import com.risk6441.strategy.IStrategy;
+import com.risk6441.strategy.Random;
 
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
@@ -63,7 +67,7 @@ public class PlayerStrategyChooserController extends Observable implements Initi
 			if (node.get(1) instanceof ChoiceBox<?>) {
 				PlayerStrategy strategyType = (PlayerStrategy) ((ChoiceBox<?>) node.get(1)).getSelectionModel().getSelectedItem();
 				playerList.get(count).setPlayerStrategy(strategyType);
-				Human strategy = getStrategyObjectForThePlayer(strategyType.toString());
+				IStrategy strategy = getStrategyObjectForThePlayer(strategyType.toString());
 				playerList.get(count).setStrategy(strategy);
 				count++;
 			}
@@ -88,11 +92,23 @@ public class PlayerStrategyChooserController extends Observable implements Initi
 	 * @param str string defining type of strategy for the player
 	 * @return strategy object
 	 */
-	private Human getStrategyObjectForThePlayer(String str) {
-		Human strategy = null;
+	private IStrategy getStrategyObjectForThePlayer(String str) {
+		IStrategy strategy = null;
 		System.out.println("string selection"+str.isEmpty());
 		if (str.equals("HUMAN")) {
 			strategy = new Human();
+		} else if (str.equals("AGGRESSIVE")) {
+			strategy = new Aggressive();
+
+		} else if (str.equals("BENEVOLENT")) {
+			strategy = new Benevolent();
+
+		} else if (str.equals("RANDOM")) {
+			strategy = new Random();
+
+		} else if (str.equals("CHEATER")) {
+			strategy = new Cheater();
+
 		}
 		return strategy;
 	}

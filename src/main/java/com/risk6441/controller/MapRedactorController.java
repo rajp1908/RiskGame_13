@@ -277,7 +277,7 @@ public class MapRedactorController implements Initializable{
      * @throws InvalidMap InvalidMapException if any error occurs
      */
     @FXML
-    void updateCountry(ActionEvent event) {
+    void updateCountry(ActionEvent event) throws InvalidMap{
     	if(StringUtils.isEmpty(txtCounName.getText())) {
     		CommonMapUtilities.alertBox("Error", "Country Name Can't be empty.", "Error");
     		return;

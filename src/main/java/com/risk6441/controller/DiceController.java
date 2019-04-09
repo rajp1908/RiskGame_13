@@ -256,7 +256,6 @@ public class DiceController implements Initializable{
 	 */
 	@FXML
 	void rollDice(ActionEvent event) {
-		System.out.println("Inside roll dice");
 
 		if (!chkBoxattackerDice1.isSelected() && !chkBoxattackerDice2.isSelected()
 				&& !chkBoxattackerDice3.isSelected()) {
@@ -292,7 +291,7 @@ public class DiceController implements Initializable{
 			CommonMapUtilities.disableControls(btnRoll);
 			CommonMapUtilities.enableControls(btnContinueRoll);
 		}
-	//	CommonMapUtilities.enableOrDisableSave(false);
+		CommonMapUtilities.enableOrDisableSave(false);
 		lblDefenderArmies.setText("Armies: " + String.valueOf(defendingCountry.getArmy()));
 		lblAttackerArmies.setText("Armies: " + String.valueOf(attackingCountry.getArmy()));
 		lblStatus.setText(playResult.toString());
@@ -454,8 +453,8 @@ public class DiceController implements Initializable{
 		loadAndShowDice();
 
 		int count = attackFullOnForStrategy();
-		System.out.println(moveArmiesView.isVisible() + "Anna");
-		System.out.println(btnCancelDiceRoll.isVisible() + "Anna");
+//		System.out.println(moveArmiesView.isVisible() + "Anna");
+//		System.out.println(btnCancelDiceRoll.isVisible() + "Anna");
 		if (moveArmiesView.isVisible()) {
 			diceModel.moveAllArmies();
 		} else {
