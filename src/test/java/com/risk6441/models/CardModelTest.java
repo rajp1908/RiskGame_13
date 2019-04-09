@@ -86,7 +86,7 @@ public class CardModelTest {
 
 	/**
 	 * This method is used to check number of cards are not 3 and if trade is
-	 * possible or not.
+	 * possible or not at a time.
 	 */
 	@Test
 	public void testisCardsvalidForTrade() {
