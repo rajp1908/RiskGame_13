@@ -1,6 +1,6 @@
 package com.risk6441.models;
 
-import static org.junit.Assert.assertArrayEquals;
+
 
 import java.util.ArrayList;
 import java.util.List;
@@ -30,15 +30,15 @@ import javafx.scene.control.TextArea;
 /**
  * @author Raj
  * @author Jemish
- *
+ * @author Hardik
  */
 public class PlayerModelTest {
 
 	static Map map;
 	static Continent continent;
 	String continentName = "Asia";
-	String terrName1 = "India";
-	String terrName2 = "Canada";
+	String counName1 = "India";
+	String counName2 = "Canada";
 	
 	@FXML
 	static TextArea txtAreaMsg;
@@ -98,9 +98,9 @@ public class PlayerModelTest {
 		continent.setName(continentName);
 		continent.setValue(controlValue1);
 		
-		coun1.setName(terrName1);
+		coun1.setName(counName1);
 		coun1.setBelongToContinent(continent);
-		coun2.setName(terrName2);
+		coun2.setName(counName2);
 		coun2.setBelongToContinent(continent);		
 		
 		coun2.getAdjacentCountries().add(coun1);
