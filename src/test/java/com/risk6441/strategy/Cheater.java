@@ -23,7 +23,7 @@ import javafx.scene.control.ListView;
 import javafx.scene.control.TextArea;
 
 /**
- * @author Nirav
+ * @author Dolly
  *
  */
 public class Cheater extends Observable implements IStrategy {

@@ -18,7 +18,7 @@ import javafx.scene.control.ListView;
  * 
  * @author Deep
  * @author Jemish
- *
+ * @author Dolly
  */
 public interface IStrategy extends Serializable{
 	

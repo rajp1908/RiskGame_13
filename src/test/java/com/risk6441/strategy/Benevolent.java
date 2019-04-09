@@ -23,7 +23,7 @@ import javafx.scene.control.TextArea;
 /**
  * @author Jemish
  * @author Raj
- *
+ *@author Dolly
  */
 public class Benevolent implements IStrategy {
 
