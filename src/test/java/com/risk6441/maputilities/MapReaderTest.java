@@ -56,7 +56,7 @@ public class MapReaderTest {
 	}
 	
 	/**
-	 * This method test the map whose continent are not conntected graph formed by countries
+	 * This method test the map whose continent are not connected graph formed by countries
 	 * @throws InvalidMap InvalidMapException
 	 */
 	@Test (expected=InvalidMap.class)
