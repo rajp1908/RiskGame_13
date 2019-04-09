@@ -3,7 +3,7 @@
  */
 package com.risk6441.models;
 
-import static org.junit.Assert.assertEquals;
+
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
@@ -20,7 +20,7 @@ import com.risk6441.gameutilities.GameUtilities;
 /**
  * @author Jemish
  * @author Raj
- *
+ * @author Hardik
  */
 public class DiceModelTest {
 
